@@ -1,0 +1,16 @@
+{
+  "status": "ok",
+  "root_function": "sub_4026d0",
+  "alias": "MalAPI_Tlsinitializer",
+  "summary": "线程本地存储初始化器，检查参数有效性后调用TLS数据初始化函数，最终通过TLS索引解析器进行程序初始化",
+  "attck": [
+    "T1574.006: Hijack Execution Flow - Dynamic Linker Hijacking"
+  ],
+  "children_aliases": {
+    "sub_4027d8": "Tlsindexresolver"
+  },
+  "source_hlil": "D:\\Experimental data\\ori100\\extracted\\malicious\\roi_decomp\\cc3e7b04cd079c8c2047b7e417d73f5f\\0x4026d0.hlil.c",
+  "alias_map_json": "D:\\Experimental data\\ori100\\extracted\\malicious\\alias_map\\cc3e7b04cd079c8c2047b7e417d73f5f\\0x4026d0.hlil\\sub_4026d0_alias_map.json",
+  "generated_cpp": "D:\\Experimental data\\ori100\\extracted\\malicious\\cpp_api\\cc3e7b04cd079c8c2047b7e417d73f5f\\MalAPI_Tlsinitializer\\MalAPI_Tlsinitializer.cpp",
+  "tries": 1
+}

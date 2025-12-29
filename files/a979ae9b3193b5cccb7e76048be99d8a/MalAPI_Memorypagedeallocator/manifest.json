@@ -1,0 +1,17 @@
+{
+  "status": "ok",
+  "root_function": "sub_40f4ea",
+  "alias": "MalAPI_Memorypagedeallocator",
+  "summary": "遍历内存链表，释放已提交的内存页，维护内存管理结构，并在特定条件下清理整个内存块",
+  "attck": [
+    "T1480: Execution Guardrails",
+    "T1497: Virtualization/Sandbox Evasion"
+  ],
+  "children_aliases": {
+    "sub_40f494": "HeapMemoryCleanup"
+  },
+  "source_hlil": "D:\\Experimental data\\ori100\\extracted\\malicious\\roi_decomp\\a979ae9b3193b5cccb7e76048be99d8a\\0x40f4ea.hlil.c",
+  "alias_map_json": "D:\\Experimental data\\ori100\\extracted\\malicious\\alias_map\\a979ae9b3193b5cccb7e76048be99d8a\\0x40f4ea.hlil\\sub_40f4ea_alias_map.json",
+  "generated_cpp": "D:\\Experimental data\\ori100\\extracted\\malicious\\cpp_api\\a979ae9b3193b5cccb7e76048be99d8a\\MalAPI_Memorypagedeallocator\\MalAPI_Memorypagedeallocator.cpp",
+  "tries": 1
+}

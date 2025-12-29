@@ -1,0 +1,15 @@
+{
+  "status": "ok",
+  "root_function": "_start",
+  "alias": "MalAPI_LzmaDecompressor",
+  "summary": "实现LZMA压缩算法的解压缩例程，使用基于范围编码的概率模型进行位流解码，包含状态机更新和概率表维护",
+  "attck": [
+    "T1027: Obfuscated Files or Information",
+    "T1140: Deobfuscate/Decode Files or Information"
+  ],
+  "children_aliases": {},
+  "source_hlil": "D:\\Experimental data\\ori100\\extracted\\malicious\\roi_decomp\\cab8beaefcf8f06d5928364d9d749fae\\0x424640.hlil.c",
+  "alias_map_json": "D:\\Experimental data\\ori100\\extracted\\malicious\\alias_map\\cab8beaefcf8f06d5928364d9d749fae\\0x424640.hlil\\_start_alias_map.json",
+  "generated_cpp": "D:\\Experimental data\\ori100\\extracted\\malicious\\cpp_api\\cab8beaefcf8f06d5928364d9d749fae\\MalAPI_LzmaDecompressor\\MalAPI_LzmaDecompressor.cpp",
+  "tries": 1
+}

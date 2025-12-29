@@ -1,0 +1,15 @@
+{
+  "status": "ok",
+  "root_function": "sub_4046b7",
+  "alias": "MalAPI_Threadpoolworkercleanup",
+  "summary": "等待线程池中的对象信号，清理已完成的线程句柄和相关资源，调整线程池数组结构，并在线程池为空时释放整个池结构",
+  "attck": [
+    "T1070.004: Indicator Removal on Host - File Deletion",
+    "T1490: Inhibit System Recovery"
+  ],
+  "children_aliases": {},
+  "source_hlil": "D:\\Experimental data\\ori100\\extracted\\malicious\\roi_decomp\\4fd7e82067fb62867a47752224eaadd7\\0x4046b7.hlil.c",
+  "alias_map_json": "D:\\Experimental data\\ori100\\extracted\\malicious\\alias_map\\4fd7e82067fb62867a47752224eaadd7\\0x4046b7.hlil\\sub_4046b7_alias_map.json",
+  "generated_cpp": "D:\\Experimental data\\ori100\\extracted\\malicious\\cpp_api\\4fd7e82067fb62867a47752224eaadd7\\MalAPI_Threadpoolworkercleanup\\MalAPI_Threadpoolworkercleanup.cpp",
+  "tries": 1
+}

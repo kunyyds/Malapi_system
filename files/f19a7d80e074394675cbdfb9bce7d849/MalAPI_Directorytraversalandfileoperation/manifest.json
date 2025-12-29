@@ -1,0 +1,18 @@
+{
+  "status": "ok",
+  "root_function": "sub_401d80",
+  "alias": "MalAPI_Directorytraversalandfileoperation",
+  "summary": "遍历指定目录，对文件进行字符串操作和文件属性检查，根据文件类型执行不同的文件操作",
+  "attck": [
+    "T1083: File and Directory Discovery",
+    "T1105: Ingress Tool Transfer"
+  ],
+  "children_aliases": {
+    "sub_401d20": "StringComparisonChecker",
+    "sub_404120": "Strcat"
+  },
+  "source_hlil": "D:\\Experimental data\\ori100\\extracted\\malicious\\roi_decomp\\f19a7d80e074394675cbdfb9bce7d849\\0x401d80.hlil.c",
+  "alias_map_json": "D:\\Experimental data\\ori100\\extracted\\malicious\\alias_map\\f19a7d80e074394675cbdfb9bce7d849\\0x401d80.hlil\\sub_401d80_alias_map.json",
+  "generated_cpp": "D:\\Experimental data\\ori100\\extracted\\malicious\\cpp_api\\f19a7d80e074394675cbdfb9bce7d849\\MalAPI_Directorytraversalandfileoperation\\MalAPI_Directorytraversalandfileoperation.cpp",
+  "tries": 1
+}

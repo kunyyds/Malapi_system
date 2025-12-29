@@ -1,0 +1,15 @@
+{
+  "status": "ok",
+  "root_function": "sub_403011",
+  "alias": "MalAPI_Getfilesizeortype",
+  "summary": "获取文件大小或检查驱动器/目录类型，处理路径规范化并区分文件和目录",
+  "attck": [
+    "T1083 - File and Directory Discovery",
+    "T1005 - Data from Local System"
+  ],
+  "children_aliases": {},
+  "source_hlil": "D:\\Experimental data\\ori100\\extracted\\malicious\\roi_decomp\\a8b46b24ab4b78d0cef4751ccd76ba82\\0x403011.hlil.c",
+  "alias_map_json": "D:\\Experimental data\\ori100\\extracted\\malicious\\alias_map\\a8b46b24ab4b78d0cef4751ccd76ba82\\0x403011.hlil\\sub_403011_alias_map.json",
+  "generated_cpp": "D:\\Experimental data\\ori100\\extracted\\malicious\\cpp_api\\a8b46b24ab4b78d0cef4751ccd76ba82\\MalAPI_Getfilesizeortype\\MalAPI_Getfilesizeortype.cpp",
+  "tries": 1
+}

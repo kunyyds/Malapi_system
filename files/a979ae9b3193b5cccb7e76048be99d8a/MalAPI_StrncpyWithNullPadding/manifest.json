@@ -1,0 +1,15 @@
+{
+  "status": "ok",
+  "root_function": "sub_40ab40",
+  "alias": "MalAPI_StrncpyWithNullPadding",
+  "summary": "实现带空字符填充的安全字符串复制功能，按4字节对齐优化复制过程，确保目标缓冲区被正确填充",
+  "attck": [
+    "T1055: Process Injection",
+    "T1027: Obfuscated Files or Information"
+  ],
+  "children_aliases": {},
+  "source_hlil": "D:\\Experimental data\\ori100\\extracted\\malicious\\roi_decomp\\a979ae9b3193b5cccb7e76048be99d8a\\0x40ab40.hlil.c",
+  "alias_map_json": "D:\\Experimental data\\ori100\\extracted\\malicious\\alias_map\\a979ae9b3193b5cccb7e76048be99d8a\\0x40ab40.hlil\\sub_40ab40_alias_map.json",
+  "generated_cpp": "D:\\Experimental data\\ori100\\extracted\\malicious\\cpp_api\\a979ae9b3193b5cccb7e76048be99d8a\\MalAPI_StrncpyWithNullPadding\\MalAPI_StrncpyWithNullPadding.cpp",
+  "tries": 1
+}

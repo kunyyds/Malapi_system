@@ -1,0 +1,21 @@
+1. 根本功能：对解析出的Malware的API进行管理，希望首页面按照ATT&CK网站的矩阵样式，其下的各个技术一致，后台没有数据暂时不用管
+2. 我拆解的部分需求：首先能够对MalFocus的结果 json文件进行解析和对应的cpp代码进行存储，在之后的T+编号下的网页里能够看到cpp源代码
+其次是后台需要存储数据：cpp源代码，T编号，Malware的API描述信息，T编号和源代码的映射关系
+
+还有需要保留和LLM对接的接口，因为需要实现LLM解释CPP源码和攻击方案的智能化构建
+
+第一阶段：
+1. ATT&CK矩阵首页优化
+2. 函数详情页面增强
+3. 搜索功能实现
+4. API服务层完善
+
+第二阶段.2:
+P1 - 增强功能： 4. MITRE官方API集成和描述展示 5. 添加子技术列表快速导航 
+P2 - 优化功能： 6. 三级缓存机制 7. 后台自动更新任务 是否开始实施此计划
+
+
+-- 回滚到旧约束
+ALTER TABLE malapi_functions DROP CONSTRAINT IF EXISTS unique_hash_id;
+ALTER TABLE malapi_functions DROP CONSTRAINT IF EXISTS unique_alias;
+ALTER TABLE malapi_functions ADD CONSTRAINT unique_function UNIQUE (hash_id, alias);

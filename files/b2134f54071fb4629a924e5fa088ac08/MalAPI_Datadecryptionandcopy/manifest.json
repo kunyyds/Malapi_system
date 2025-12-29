@@ -1,0 +1,16 @@
+{
+  "status": "ok",
+  "root_function": "sub_402060",
+  "alias": "MalAPI_Datadecryptionandcopy",
+  "summary": "Performs XOR-based decryption on input data followed by memory copy operations and decompression-like processing using loop structures",
+  "attck": [
+    "T1027: Obfuscated Files or Information",
+    "T1140: Deobfuscate/Decode Files or Information",
+    "T1003: OS Credential Dumping"
+  ],
+  "children_aliases": {},
+  "source_hlil": "D:\\Experimental data\\ori100\\extracted\\malicious\\roi_decomp\\b2134f54071fb4629a924e5fa088ac08\\0x402060.hlil.c",
+  "alias_map_json": "D:\\Experimental data\\ori100\\extracted\\malicious\\alias_map\\b2134f54071fb4629a924e5fa088ac08\\0x402060.hlil\\sub_402060_alias_map.json",
+  "generated_cpp": "D:\\Experimental data\\ori100\\extracted\\malicious\\cpp_api\\b2134f54071fb4629a924e5fa088ac08\\MalAPI_Datadecryptionandcopy\\MalAPI_Datadecryptionandcopy.cpp",
+  "tries": 1
+}

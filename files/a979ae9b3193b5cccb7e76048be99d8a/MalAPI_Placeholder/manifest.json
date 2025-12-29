@@ -1,0 +1,16 @@
+{
+  "status": "ok",
+  "root_function": "sub_40aec4",
+  "alias": "MalAPI_Placeholder",
+  "summary": "遍历函数指针数组并调用所有非空函数指针",
+  "attck": [
+    "T1055: 进程注入",
+    "T1106: 原生API",
+    "T1129: 共享模块"
+  ],
+  "children_aliases": {},
+  "source_hlil": "D:\\Experimental data\\ori100\\extracted\\malicious\\roi_decomp\\a979ae9b3193b5cccb7e76048be99d8a\\0x40aec4.hlil.c",
+  "alias_map_json": "D:\\Experimental data\\ori100\\extracted\\malicious\\alias_map\\a979ae9b3193b5cccb7e76048be99d8a\\0x40aec4.hlil\\sub_40aec4_alias_map.json",
+  "generated_cpp": "D:\\Experimental data\\ori100\\extracted\\malicious\\cpp_api\\a979ae9b3193b5cccb7e76048be99d8a\\MalAPI_Placeholder\\MalAPI_Placeholder.cpp",
+  "tries": 1
+}

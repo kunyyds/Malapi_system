@@ -1,0 +1,28 @@
+{
+  "status": "ok",
+  "root_function": "sub_4025d0",
+  "alias": "MalAPI_Windowmessagehandler",
+  "summary": "处理窗口消息，根据消息类型创建窗口控件、处理命令消息、执行数据操作和协调消息分发流程",
+  "attck": [
+    "T1055.002: Process Injection - Portable Executable Injection",
+    "T1112: Modify Registry",
+    "T1059.003: Command and Scripting Interpreter - Windows Command Shell"
+  ],
+  "children_aliases": {
+    "sub_402450": "GetlasterrorStorer",
+    "sub_402890": "Messageswitchcoordinator",
+    "sub_4028c1": "LoopAddOffset",
+    "sub_402959": "Conditionalmessagedispatcher",
+    "sub_4029a9": "Messagedispatcher",
+    "sub_402a55": "Messageterminator",
+    "sub_402ac1": "Dataprocessingcoordinator",
+    "sub_402b0f": "Sendmessageandshowdialog",
+    "sub_402b60": "ReverseCopyWithMessage",
+    "sub_402be5": "Conditionalarg2handler",
+    "sub_402d18": "PebLookupfunctionaddress"
+  },
+  "source_hlil": "D:\\Experimental data\\ori100\\extracted\\malicious\\roi_decomp\\b2134f54071fb4629a924e5fa088ac08\\0x4025d0.hlil.c",
+  "alias_map_json": "D:\\Experimental data\\ori100\\extracted\\malicious\\alias_map\\b2134f54071fb4629a924e5fa088ac08\\0x4025d0.hlil\\sub_4025d0_alias_map.json",
+  "generated_cpp": "D:\\Experimental data\\ori100\\extracted\\malicious\\cpp_api\\b2134f54071fb4629a924e5fa088ac08\\MalAPI_Windowmessagehandler\\MalAPI_Windowmessagehandler.cpp",
+  "tries": 1
+}

@@ -1,0 +1,50 @@
+name: malapi-backend
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  # 第一层：Web框架
+  - fastapi=0.125.0
+  - uvicorn=0.38.0
+
+  # 第二层：数据库相关
+  - sqlalchemy=2.0.45
+  - psycopg2=2.9.10
+
+  # 第三层：缓存和验证
+  - redis-py=7.1.0
+  - pydantic
+
+  # 第四层：开发工具
+  - pytest=9.0.2
+  - black=25.12.0
+  - isort=7.0.0
+  - flake8=7.3.0
+  - mypy=1.19.1
+
+  # 第五层：异步和HTTP客户端
+  - asyncpg=0.31.0
+  - httpx
+  - aiohttp=3.13.2
+
+  # pip安装的包
+  - pip
+  - pip:
+      - python-multipart
+      - aiofiles
+      - python-dotenv
+      - loguru
+      - pytest-asyncio
+      - openai
+      - tiktoken
+      # JWT和认证相关
+      - python-jose[cryptography]
+      - passlib[bcrypt]
+
+variables:
+  DATABASE_URL: "sqlite+aiosqlite:///./malapi.db"
+  DEBUG: "true"
+  LOG_LEVEL: "INFO"
+
+prefix: null

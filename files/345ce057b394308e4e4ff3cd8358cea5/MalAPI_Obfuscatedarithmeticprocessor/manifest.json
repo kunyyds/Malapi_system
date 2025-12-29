@@ -1,0 +1,18 @@
+{
+  "status": "ok",
+  "root_function": "sub_40102b",
+  "alias": "MalAPI_Obfuscatedarithmeticprocessor",
+  "summary": "Performs complex arithmetic operations with obfuscated control flow, including bit manipulation, I/O operations, and conditional jumps based on arithmetic flags",
+  "attck": [
+    "T1027: Obfuscated Files or Information",
+    "T1055: Process Injection",
+    "T1497: Virtualization/Sandbox Evasion"
+  ],
+  "children_aliases": {
+    "sub_40103f": "Placeholder"
+  },
+  "source_hlil": "D:\\Experimental data\\ori100\\extracted\\malicious\\roi_decomp\\345ce057b394308e4e4ff3cd8358cea5\\0x40102b.hlil.c",
+  "alias_map_json": "D:\\Experimental data\\ori100\\extracted\\malicious\\alias_map\\345ce057b394308e4e4ff3cd8358cea5\\0x40102b.hlil\\sub_40102b_alias_map.json",
+  "generated_cpp": "D:\\Experimental data\\ori100\\extracted\\malicious\\cpp_api\\345ce057b394308e4e4ff3cd8358cea5\\MalAPI_Obfuscatedarithmeticprocessor\\MalAPI_Obfuscatedarithmeticprocessor.cpp",
+  "tries": 1
+}

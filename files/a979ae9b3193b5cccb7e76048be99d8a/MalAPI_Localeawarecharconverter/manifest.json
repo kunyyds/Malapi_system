@@ -1,0 +1,19 @@
+{
+  "status": "ok",
+  "root_function": "sub_412327",
+  "alias": "MalAPI_Localeawarecharconverter",
+  "summary": "基于系统区域设置的字符转换函数，处理大小写转换和字符编码映射，支持ANSI和Unicode字符的多字节编码处理",
+  "attck": [
+    "T1027: Obfuscated Files or Information",
+    "T1055: Process Injection",
+    "T1140: Deobfuscate/Decode Files or Information"
+  ],
+  "children_aliases": {
+    "sub_40dcab": "Localemapper",
+    "sub_40decf": "Charactertypeanalyzer"
+  },
+  "source_hlil": "D:\\Experimental data\\ori100\\extracted\\malicious\\roi_decomp\\a979ae9b3193b5cccb7e76048be99d8a\\0x412327.hlil.c",
+  "alias_map_json": "D:\\Experimental data\\ori100\\extracted\\malicious\\alias_map\\a979ae9b3193b5cccb7e76048be99d8a\\0x412327.hlil\\sub_412327_alias_map.json",
+  "generated_cpp": "D:\\Experimental data\\ori100\\extracted\\malicious\\cpp_api\\a979ae9b3193b5cccb7e76048be99d8a\\MalAPI_Localeawarecharconverter\\MalAPI_Localeawarecharconverter.cpp",
+  "tries": 1
+}

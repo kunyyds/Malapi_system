@@ -1,0 +1,20 @@
+{
+  "status": "ok",
+  "root_function": "sub_403fe8",
+  "alias": "MalAPI_Dynamicbufferrelocator",
+  "summary": "动态重新定位和管理缓冲区链，通过遍历缓冲区地址表，有条件地重新分配内存并复制数据，处理引用计数和缓冲区交换",
+  "attck": [
+    "T1490: Inhibit System Recovery",
+    "T1480: Execution Guardrails"
+  ],
+  "children_aliases": {
+    "sub_40265c": "MemcpyConditionalOverlap",
+    "sub_403d0c": "Referencecountedbufferswap",
+    "sub_403d7c": "Allocateandinitializebuffer",
+    "sub_404104": "Buffermanagementrouter"
+  },
+  "source_hlil": "D:\\Experimental data\\ori100\\extracted\\malicious\\roi_decomp\\7b630b9eae12986861cd973b68f88169\\0x403fe8.hlil.c",
+  "alias_map_json": "D:\\Experimental data\\ori100\\extracted\\malicious\\alias_map\\7b630b9eae12986861cd973b68f88169\\0x403fe8.hlil\\sub_403fe8_alias_map.json",
+  "generated_cpp": "D:\\Experimental data\\ori100\\extracted\\malicious\\cpp_api\\7b630b9eae12986861cd973b68f88169\\MalAPI_Dynamicbufferrelocator\\MalAPI_Dynamicbufferrelocator.cpp",
+  "tries": 1
+}

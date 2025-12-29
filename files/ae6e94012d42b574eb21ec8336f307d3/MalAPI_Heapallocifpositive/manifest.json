@@ -1,0 +1,14 @@
+{
+  "status": "ok",
+  "root_function": "sub_4021e0",
+  "alias": "MalAPI_Heapallocifpositive",
+  "summary": "Allocates heap memory with zero initialization if the size argument is positive, otherwise returns zero.",
+  "attck": [
+    "T1055.001"
+  ],
+  "children_aliases": {},
+  "source_hlil": "D:\\Experimental data\\ori100\\extracted\\malicious\\roi_decomp\\ae6e94012d42b574eb21ec8336f307d3\\0x4021e0.hlil.c",
+  "alias_map_json": "D:\\Experimental data\\ori100\\extracted\\malicious\\alias_map\\ae6e94012d42b574eb21ec8336f307d3\\0x4021e0.hlil\\sub_4021e0_alias_map.json",
+  "generated_cpp": "D:\\Experimental data\\ori100\\extracted\\malicious\\cpp_api\\ae6e94012d42b574eb21ec8336f307d3\\MalAPI_Heapallocifpositive\\MalAPI_Heapallocifpositive.cpp",
+  "tries": 1
+}

@@ -1,0 +1,12 @@
+{
+  "status": "ok",
+  "root_function": "sub_40521c",
+  "alias": "sub_40521c",
+  "summary": "",
+  "attck": [],
+  "children_aliases": {},
+  "source_hlil": "D:\\Experimental data\\ori100\\extracted\\malicious\\roi_decomp\\cc3e7b04cd079c8c2047b7e417d73f5f\\0x40521c.hlil.c",
+  "alias_map_json": "D:\\Experimental data\\ori100\\extracted\\malicious\\alias_map\\cc3e7b04cd079c8c2047b7e417d73f5f\\0x40521c.hlil\\sub_40521c_alias_map.json",
+  "generated_cpp": "D:\\Experimental data\\ori100\\extracted\\malicious\\cpp_api\\cc3e7b04cd079c8c2047b7e417d73f5f\\sub_40521c\\sub_40521c.cpp",
+  "tries": 1
+}

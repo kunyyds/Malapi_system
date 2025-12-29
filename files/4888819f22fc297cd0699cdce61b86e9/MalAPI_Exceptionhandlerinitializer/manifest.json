@@ -1,0 +1,17 @@
+{
+  "status": "ok",
+  "root_function": "sub_4026d0",
+  "alias": "MalAPI_Exceptionhandlerinitializer",
+  "summary": "检查参数有效性后初始化异常处理系统，通过异常处理路由器配置异常处理模式并终止程序执行",
+  "attck": [
+    "T1055: Process Injection",
+    "T1546: Event Triggered Execution"
+  ],
+  "children_aliases": {
+    "sub_4027d8": "Exceptionhandlerrouter"
+  },
+  "source_hlil": "D:\\Experimental data\\ori100\\extracted\\malicious\\roi_decomp\\4888819f22fc297cd0699cdce61b86e9\\0x4026d0.hlil.c",
+  "alias_map_json": "D:\\Experimental data\\ori100\\extracted\\malicious\\alias_map\\4888819f22fc297cd0699cdce61b86e9\\0x4026d0.hlil\\sub_4026d0_alias_map.json",
+  "generated_cpp": "D:\\Experimental data\\ori100\\extracted\\malicious\\cpp_api\\4888819f22fc297cd0699cdce61b86e9\\MalAPI_Exceptionhandlerinitializer\\MalAPI_Exceptionhandlerinitializer.cpp",
+  "tries": 1
+}

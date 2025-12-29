@@ -1,0 +1,15 @@
+{
+  "status": "ok",
+  "root_function": "sub_4beb80",
+  "alias": "MalAPI_OptimizedStrcpy",
+  "summary": "高度优化的字符串复制函数，使用字对齐和位运算技巧来加速复制过程",
+  "attck": [
+    "T1055: Process Injection",
+    "T1027: Obfuscated Files or Information"
+  ],
+  "children_aliases": {},
+  "source_hlil": "D:\\Experimental data\\ori100\\extracted\\malicious\\roi_decomp\\fb16c1dc07a1d1392e88a4b47f8f8312\\0x4beb80.hlil.c",
+  "alias_map_json": "D:\\Experimental data\\ori100\\extracted\\malicious\\alias_map\\fb16c1dc07a1d1392e88a4b47f8f8312\\0x4beb80.hlil\\sub_4beb80_alias_map.json",
+  "generated_cpp": "D:\\Experimental data\\ori100\\extracted\\malicious\\cpp_api\\fb16c1dc07a1d1392e88a4b47f8f8312\\MalAPI_OptimizedStrcpy\\MalAPI_OptimizedStrcpy.cpp",
+  "tries": 1
+}

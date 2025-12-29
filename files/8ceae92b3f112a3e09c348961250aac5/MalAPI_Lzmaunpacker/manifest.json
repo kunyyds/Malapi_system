@@ -1,0 +1,18 @@
+{
+  "status": "ok",
+  "root_function": "_start",
+  "alias": "MalAPI_Lzmaunpacker",
+  "summary": "Performs LZMA decompression with memory relocation and code patching, including relative address fixups for E8 call instructions in the decompressed data",
+  "attck": [
+    "T1027: Obfuscated Files or Information",
+    "T1140: Deobfuscate/Decode Files or Information",
+    "T1055: Process Injection"
+  ],
+  "children_aliases": {
+    "sub_41316d": "LzmaDecoder"
+  },
+  "source_hlil": "D:\\Experimental data\\ori100\\extracted\\malicious\\roi_decomp\\8ceae92b3f112a3e09c348961250aac5\\0x41309a.hlil.c",
+  "alias_map_json": "D:\\Experimental data\\ori100\\extracted\\malicious\\alias_map\\8ceae92b3f112a3e09c348961250aac5\\0x41309a.hlil\\_start_alias_map.json",
+  "generated_cpp": "D:\\Experimental data\\ori100\\extracted\\malicious\\cpp_api\\8ceae92b3f112a3e09c348961250aac5\\MalAPI_Lzmaunpacker\\MalAPI_Lzmaunpacker.cpp",
+  "tries": 1
+}

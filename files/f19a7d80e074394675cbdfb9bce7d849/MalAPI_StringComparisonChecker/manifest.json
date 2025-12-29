@@ -1,0 +1,15 @@
+{
+  "status": "ok",
+  "root_function": "sub_401d20",
+  "alias": "MalAPI_StringComparisonChecker",
+  "summary": "Compares input string against two hardcoded strings sequentially, returning 1 if matches either, 0 otherwise",
+  "attck": [
+    "T1140 - Deobfuscate/Decode Files or Information",
+    "T1027 - Obfuscated Files or Information"
+  ],
+  "children_aliases": {},
+  "source_hlil": "D:\\Experimental data\\ori100\\extracted\\malicious\\roi_decomp\\f19a7d80e074394675cbdfb9bce7d849\\0x401d20.hlil.c",
+  "alias_map_json": "D:\\Experimental data\\ori100\\extracted\\malicious\\alias_map\\f19a7d80e074394675cbdfb9bce7d849\\0x401d20.hlil\\sub_401d20_alias_map.json",
+  "generated_cpp": "D:\\Experimental data\\ori100\\extracted\\malicious\\cpp_api\\f19a7d80e074394675cbdfb9bce7d849\\MalAPI_StringComparisonChecker\\MalAPI_StringComparisonChecker.cpp",
+  "tries": 1
+}

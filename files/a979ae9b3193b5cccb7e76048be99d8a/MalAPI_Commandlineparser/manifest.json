@@ -1,0 +1,14 @@
+{
+  "status": "ok",
+  "root_function": "sub_40c520",
+  "alias": "MalAPI_Commandlineparser",
+  "summary": "解析命令行参数，处理引号、转义字符和空格分隔符，构建参数数组",
+  "attck": [
+    "T1059: Command and Scripting Interpreter"
+  ],
+  "children_aliases": {},
+  "source_hlil": "D:\\Experimental data\\ori100\\extracted\\malicious\\roi_decomp\\a979ae9b3193b5cccb7e76048be99d8a\\0x40c520.hlil.c",
+  "alias_map_json": "D:\\Experimental data\\ori100\\extracted\\malicious\\alias_map\\a979ae9b3193b5cccb7e76048be99d8a\\0x40c520.hlil\\sub_40c520_alias_map.json",
+  "generated_cpp": "D:\\Experimental data\\ori100\\extracted\\malicious\\cpp_api\\a979ae9b3193b5cccb7e76048be99d8a\\MalAPI_Commandlineparser\\MalAPI_Commandlineparser.cpp",
+  "tries": 1
+}

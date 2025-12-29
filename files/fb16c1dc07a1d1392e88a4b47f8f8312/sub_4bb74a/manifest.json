@@ -1,0 +1,12 @@
+{
+  "status": "ok",
+  "root_function": "sub_4bb74a",
+  "alias": "sub_4bb74a",
+  "summary": "",
+  "attck": [],
+  "children_aliases": {},
+  "source_hlil": "D:\\Experimental data\\ori100\\extracted\\malicious\\roi_decomp\\fb16c1dc07a1d1392e88a4b47f8f8312\\0x4bb74a.hlil.c",
+  "alias_map_json": "D:\\Experimental data\\ori100\\extracted\\malicious\\alias_map\\fb16c1dc07a1d1392e88a4b47f8f8312\\0x4bb74a.hlil\\sub_4bb74a_alias_map.json",
+  "generated_cpp": "D:\\Experimental data\\ori100\\extracted\\malicious\\cpp_api\\fb16c1dc07a1d1392e88a4b47f8f8312\\sub_4bb74a\\sub_4bb74a.cpp",
+  "tries": 1
+}

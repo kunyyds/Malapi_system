@@ -1,0 +1,599 @@
+/* ATT&CK矩阵样式 - 增强版 */
+.attack-matrix-container {
+  padding: 16px;
+  background: #fafafa;
+  min-height: 100vh;
+}
+
+/* 控制面板样式 */
+.matrix-controls {
+  background: #fff;
+  padding: 16px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.control-group .ant-typography {
+  margin-bottom: 0;
+  font-weight: 500;
+}
+
+/* 统计卡片样式 */
+.matrix-stats {
+  margin-bottom: 16px;
+}
+
+.stats-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  padding: 16px 20px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 20px;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 12px;
+  background: #fafafa;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+  background: #f0f9ff;
+  transform: translateY(-1px);
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 600;
+  color: #1890ff;
+  line-height: 1;
+  margin-bottom: 4px;
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* 统计颜色变体 */
+.stat-item.primary .stat-value { color: #1890ff; }
+.stat-item.success .stat-value { color: #52c41a; }
+.stat-item.warning .stat-value { color: #faad14; }
+.stat-item.error .stat-value { color: #ff4d4f; }
+
+/* 概览图表样式 */
+.overview-section {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.overview-chart-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 16px;
+}
+
+.chart-box {
+  background: #fafafa;
+  border-radius: 6px;
+  padding: 16px;
+  min-height: 300px;
+}
+
+/* 矩阵视图样式 */
+.matrix-view-section {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  padding: 0;
+  overflow: hidden;
+}
+
+.view-controls {
+  padding: 16px 20px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fafafa;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.matrix-content {
+  padding: 20px;
+  min-height: 600px;
+}
+
+/* 矩阵可视化容器 */
+.matrix-visualization {
+  width: 100%;
+  height: 600px;
+  margin: 0 auto;
+}
+
+/* 全屏模式样式 */
+.matrix-visualization.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  background: #fff;
+  padding: 20px;
+}
+
+/* 详情抽屉样式 */
+.detail-drawer .ant-drawer-body {
+  padding: 0;
+}
+
+.technique-detail-header {
+  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  color: #fff;
+  padding: 24px;
+  margin: -24px -24px 20px -24px;
+}
+
+.technique-detail-header .technique-title {
+  color: #fff;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.technique-detail-header .technique-subtitle {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+}
+
+.technique-detail-header .technique-id {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 8px;
+  display: inline-block;
+}
+
+.detail-section {
+  margin-bottom: 24px;
+}
+
+.detail-section .section-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #262626;
+}
+
+.detail-section .section-content {
+  background: #fafafa;
+  border-radius: 6px;
+  padding: 16px;
+}
+
+.related-functions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.function-card {
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  padding: 16px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.function-card:hover {
+  border-color: #1890ff;
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.1);
+}
+
+.function-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.function-name {
+  font-weight: 600;
+  color: #1890ff;
+}
+
+.function-status {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.function-status.ok {
+  background: #f6ffed;
+  color: #52c41a;
+  border: 1px solid #b7eb8f;
+}
+
+.function-status.error {
+  background: #fff2f0;
+  color: #ff4d4f;
+  border: 1px solid #ffccc7;
+}
+
+.function-status.unknown {
+  background: #f0f0f0;
+  color: #8c8c8c;
+  border: 1px solid #d9d9d9;
+}
+
+.function-summary {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 自定义表格样式 */
+.technique-table {
+  margin-top: 12px;
+}
+
+.technique-table .ant-table-thead > tr > th {
+  background: #f5f5f5;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 8px 12px;
+}
+
+.technique-table .ant-table-tbody > tr > td {
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+.technique-table .ant-table-tbody > tr:hover > td {
+  background: #f5f5ff;
+}
+
+/* 统计条形图样式 */
+.stat-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.stat-bar-fill {
+  height: 4px;
+  background: #1890ff;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.stat-bar-text {
+  font-size: 12px;
+  color: #999;
+  min-width: 40px;
+}
+
+/* 保留原有样式以确保兼容性 */
+.attack-matrix {
+  width: 100%;
+  padding: 16px;
+}
+
+.matrix-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.matrix-header h3 {
+  margin: 0;
+  color: #262626;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.matrix-legend {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #595959;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  border: 1px solid #d9d9d9;
+}
+
+.legend-color.high {
+  background-color: #ff4d4f;
+}
+
+.legend-color.medium {
+  background-color: #fa8c16;
+}
+
+.legend-color.low {
+  background-color: #52c41a;
+}
+
+.legend-color.none {
+  background-color: #f5f5f5;
+}
+
+.matrix-chart {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+}
+
+.selected-technique-card {
+  background: #f6ffed;
+  border: 1px solid #b7eb8f;
+  margin-bottom: 24px;
+}
+
+.selected-technique-card .ant-card-head {
+  background: #f6ffed;
+  border-bottom-color: #b7eb8f;
+}
+
+.technique-details p {
+  margin: 4px 0;
+  color: #595959;
+}
+
+.technique-details strong {
+  color: #262626;
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+  .overview-chart-container {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .attack-matrix-container {
+    padding: 8px;
+  }
+
+  .matrix-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .control-group {
+    justify-content: center;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .stat-value {
+    font-size: 24px;
+  }
+
+  .overview-chart-container {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-box {
+    min-height: 250px;
+  }
+
+  .matrix-visualization {
+    height: 400px;
+  }
+
+  .matrix-controls-mobile {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+
+  .attack-matrix {
+    padding: 8px;
+  }
+
+  .matrix-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .matrix-legend {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .matrix-chart {
+    padding: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .control-group {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .technique-detail-header {
+    padding: 16px;
+  }
+
+  .technique-detail-header .technique-title {
+    font-size: 20px;
+  }
+
+  .technique-detail-header .technique-subtitle {
+    font-size: 14px;
+  }
+
+  .matrix-header h3 {
+    font-size: 16px;
+  }
+
+  .legend-item {
+    font-size: 11px;
+  }
+
+  .legend-color {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* 加载状态 */
+.matrix-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.matrix-loading .ant-typography {
+  color: #666;
+}
+
+.matrix-empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  color: #8c8c8c;
+  font-size: 16px;
+}
+
+/* 暗色主题支持 */
+@media (prefers-color-scheme: dark) {
+  .attack-matrix-container {
+    background: #141414;
+  }
+
+  .matrix-controls,
+  .stats-card,
+  .overview-section,
+  .matrix-view-section {
+    background: #1f1f1f;
+    border: 1px solid #303030;
+  }
+
+  .stat-item,
+  .chart-box {
+    background: #262626;
+  }
+
+  .function-card {
+    background: #262626;
+    border-color: #434343;
+  }
+
+  .view-controls {
+    background: #262626;
+    border-bottom-color: #434343;
+  }
+}
+
+/* 动画效果 */
+.stat-item {
+  animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 工具提示样式 */
+.custom-tooltip {
+  background: rgba(0, 0, 0, 0.85) !important;
+  border: none !important;
+  border-radius: 6px !important;
+  backdrop-filter: blur(10px);
+}
+
+.custom-tooltip .tooltip-title {
+  color: #fff;
+  font-weight: 600;
+  margin-bottom: 4px;
+  font-size: 14px;
+}
+
+.custom-tooltip .tooltip-content {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 12px;
+  line-height: 1.4;
+}

@@ -1,0 +1,269 @@
+.function-detail-page {
+  min-height: calc(100vh - 64px);
+  background: #f0f2f5;
+}
+
+.function-detail-loading,
+.function-detail-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 16px;
+}
+
+.detail-header {
+  margin-bottom: 24px;
+}
+
+.function-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.function-title h1 {
+  margin: 0 0 8px 0;
+  color: #262626;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.function-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.hash-id {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 12px;
+  color: #595959;
+  background: #f5f5f5;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.function-actions {
+  flex-shrink: 0;
+}
+
+.function-summary {
+  margin-bottom: 16px;
+}
+
+.function-summary h3 {
+  margin: 0 0 8px 0;
+  color: #262626;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.function-summary p {
+  margin: 0;
+  color: #595959;
+  line-height: 1.6;
+}
+
+.function-techniques {
+  margin-bottom: 16px;
+}
+
+.function-techniques h3 {
+  margin: 0 0 8px 0;
+  color: #262626;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.technique-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.technique-tag {
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.function-descriptions {
+  margin-top: 16px;
+}
+
+.function-descriptions .ant-descriptions-item-label {
+  font-weight: 600;
+  color: #262626;
+}
+
+.code-card {
+  margin-bottom: 24px;
+}
+
+.code-card .ant-card-head {
+  background: #fafafa;
+}
+
+.analysis-card {
+  margin-bottom: 24px;
+}
+
+.analysis-card .ant-card-head {
+  background: #f6ffed;
+  border-bottom-color: #b7eb8f;
+}
+
+.analysis-result {
+  line-height: 1.6;
+}
+
+.analysis-meta {
+  margin-bottom: 16px;
+}
+
+.analysis-content {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.analysis-content h1,
+.analysis-content h2,
+.analysis-content h3 {
+  color: #262626;
+  margin-top: 16px;
+  margin-bottom: 12px;
+}
+
+.analysis-content h1:first-child,
+.analysis-content h2:first-child,
+.analysis-content h3:first-child {
+  margin-top: 0;
+}
+
+.analysis-content ul,
+.analysis-content ol {
+  padding-left: 20px;
+  margin-bottom: 16px;
+}
+
+.analysis-content li {
+  margin-bottom: 4px;
+}
+
+.analysis-content code {
+  background: #f1f3f4;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 13px;
+}
+
+.analysis-content pre {
+  background: #f8f9fa;
+  padding: 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin-bottom: 16px;
+}
+
+.analysis-content pre code {
+  background: none;
+  padding: 0;
+}
+
+.children-card {
+  margin-bottom: 24px;
+}
+
+.children-list {
+  display: grid;
+  gap: 16px;
+}
+
+.child-item {
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+.child-item h4 {
+  margin: 0 0 8px 0;
+  color: #262626;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.child-item p {
+  margin: 8px 0 0 0;
+  color: #595959;
+  line-height: 1.5;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .function-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .function-title h1 {
+    font-size: 24px;
+  }
+
+  .function-actions {
+    width: 100%;
+  }
+
+  .function-actions .ant-space {
+    width: 100%;
+  }
+
+  .function-actions .ant-btn {
+    flex: 1;
+  }
+
+  .function-descriptions .ant-descriptions {
+    font-size: 13px;
+  }
+
+  .analysis-content {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .function-title h1 {
+    font-size: 20px;
+  }
+
+  .function-summary h3,
+  .function-techniques h3 {
+    font-size: 14px;
+  }
+
+  .technique-list {
+    gap: 6px;
+  }
+
+  .analysis-content {
+    padding: 12px;
+  }
+
+  .child-item {
+    padding: 12px;
+  }
+
+  .child-item h4 {
+    font-size: 14px;
+  }
+}

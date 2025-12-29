@@ -1,0 +1,19 @@
+{
+  "status": "ok",
+  "root_function": "sub_40324c",
+  "alias": "MalAPI_Filesearchinitializer",
+  "summary": "Initializes file search operations by constructing file paths and allocating search buffers, handling file not found errors and buffer cleanup",
+  "attck": [
+    "T1083: File and Directory Discovery",
+    "T1105: Ingress Tool Transfer"
+  ],
+  "children_aliases": {
+    "sub_403397": "Heapbuffermanager",
+    "sub_403426": "Linkedlistbufferzeroer",
+    "sub_40345c": "HeapAllocMatrix"
+  },
+  "source_hlil": "D:\\Experimental data\\ori100\\extracted\\malicious\\roi_decomp\\d2cb430e79b23b314fa47e3bcfa7006c\\0x40324c.hlil.c",
+  "alias_map_json": "D:\\Experimental data\\ori100\\extracted\\malicious\\alias_map\\d2cb430e79b23b314fa47e3bcfa7006c\\0x40324c.hlil\\sub_40324c_alias_map.json",
+  "generated_cpp": "D:\\Experimental data\\ori100\\extracted\\malicious\\cpp_api\\d2cb430e79b23b314fa47e3bcfa7006c\\MalAPI_Filesearchinitializer\\MalAPI_Filesearchinitializer.cpp",
+  "tries": 1
+}

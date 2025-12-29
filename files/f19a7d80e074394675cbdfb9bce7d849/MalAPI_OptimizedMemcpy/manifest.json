@@ -1,0 +1,16 @@
+{
+  "status": "ok",
+  "root_function": "sub_403e50",
+  "alias": "MalAPI_OptimizedMemcpy",
+  "summary": "高度优化的内存复制函数，根据数据大小和内存对齐情况使用不同的复制策略，包括小数据直接复制、对齐优化复制和大数据块复制",
+  "attck": [
+    "T1114: Email Collection",
+    "T1005: Data from Local System",
+    "T1027: Obfuscated Files or Information"
+  ],
+  "children_aliases": {},
+  "source_hlil": "D:\\Experimental data\\ori100\\extracted\\malicious\\roi_decomp\\f19a7d80e074394675cbdfb9bce7d849\\0x403e50.hlil.c",
+  "alias_map_json": "D:\\Experimental data\\ori100\\extracted\\malicious\\alias_map\\f19a7d80e074394675cbdfb9bce7d849\\0x403e50.hlil\\sub_403e50_alias_map.json",
+  "generated_cpp": "D:\\Experimental data\\ori100\\extracted\\malicious\\cpp_api\\f19a7d80e074394675cbdfb9bce7d849\\MalAPI_OptimizedMemcpy\\MalAPI_OptimizedMemcpy.cpp",
+  "tries": 1
+}

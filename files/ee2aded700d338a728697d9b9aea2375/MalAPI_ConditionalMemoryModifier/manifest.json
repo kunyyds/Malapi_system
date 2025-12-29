@@ -1,0 +1,15 @@
+{
+  "status": "ok",
+  "root_function": "sub_401000",
+  "alias": "MalAPI_ConditionalMemoryModifier",
+  "summary": "根据条件参数和全局数据，遍历数组并基于位掩码检查修改指定内存位置的值",
+  "attck": [
+    "T1490: Inhibit System Recovery",
+    "T1565: Data Manipulation"
+  ],
+  "children_aliases": {},
+  "source_hlil": "D:\\Experimental data\\ori100\\extracted\\malicious\\roi_decomp\\ee2aded700d338a728697d9b9aea2375\\0x401000.hlil.c",
+  "alias_map_json": "D:\\Experimental data\\ori100\\extracted\\malicious\\alias_map\\ee2aded700d338a728697d9b9aea2375\\0x401000.hlil\\sub_401000_alias_map.json",
+  "generated_cpp": "D:\\Experimental data\\ori100\\extracted\\malicious\\cpp_api\\ee2aded700d338a728697d9b9aea2375\\MalAPI_ConditionalMemoryModifier\\MalAPI_ConditionalMemoryModifier.cpp",
+  "tries": 1
+}

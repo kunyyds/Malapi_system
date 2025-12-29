@@ -1,0 +1,115 @@
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  background: #001529;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header-left {
+  flex: 0 0 auto;
+}
+
+.app-title {
+  color: white !important;
+  margin: 0 !important;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.app-title:hover {
+  opacity: 0.8;
+}
+
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.header-menu {
+  background: transparent;
+  border-bottom: none;
+  min-width: 400px;
+}
+
+.header-menu .ant-menu-item {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.header-menu .ant-menu-item:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.header-menu .ant-menu-item-selected {
+  color: white;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.header-menu .ant-menu-item::after {
+  display: none;
+}
+
+.header-right {
+  flex: 0 0 auto;
+}
+
+.github-link {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 18px;
+  transition: color 0.3s ease;
+}
+
+.github-link:hover {
+  color: white;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .app-header {
+    padding: 0 16px;
+    flex-direction: column;
+    height: auto;
+    min-height: 64px;
+  }
+
+  .header-left {
+    order: 1;
+    width: 100%;
+    text-align: center;
+    padding: 8px 0;
+  }
+
+  .header-center {
+    order: 2;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .header-menu {
+    min-width: auto;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .header-right {
+    order: 3;
+    display: none;
+  }
+
+  .app-title {
+    font-size: 18px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-menu .ant-menu-item {
+    padding: 0 12px;
+    font-size: 12px;
+  }
+}

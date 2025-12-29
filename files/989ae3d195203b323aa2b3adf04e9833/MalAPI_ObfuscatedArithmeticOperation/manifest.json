@@ -1,0 +1,16 @@
+{
+  "status": "ok",
+  "root_function": "sub_404b60",
+  "alias": "MalAPI_ObfuscatedArithmeticOperation",
+  "summary": "执行复杂的算术运算和内存操作，包含多个条件分支和跳转，代码高度混淆",
+  "attck": [
+    "T1027: Obfuscated Files or Information",
+    "T1055: Process Injection",
+    "T1497: Virtualization/Sandbox Evasion"
+  ],
+  "children_aliases": {},
+  "source_hlil": "D:\\Experimental data\\ori100\\extracted\\malicious\\roi_decomp\\989ae3d195203b323aa2b3adf04e9833\\0x404b60.hlil.c",
+  "alias_map_json": "D:\\Experimental data\\ori100\\extracted\\malicious\\alias_map\\989ae3d195203b323aa2b3adf04e9833\\0x404b60.hlil\\sub_404b60_alias_map.json",
+  "generated_cpp": "D:\\Experimental data\\ori100\\extracted\\malicious\\cpp_api\\989ae3d195203b323aa2b3adf04e9833\\MalAPI_ObfuscatedArithmeticOperation\\MalAPI_ObfuscatedArithmeticOperation.cpp",
+  "tries": 1
+}

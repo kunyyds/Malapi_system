@@ -1,0 +1,142 @@
+.matrix-page {
+  min-height: calc(100vh - 64px);
+  background: #f0f2f5;
+}
+
+.matrix-page-loading,
+.matrix-page-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 16px;
+}
+
+.stats-row {
+  margin-bottom: 24px;
+}
+
+.stats-card {
+  text-align: center;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stats-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.matrix-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+}
+
+.matrix-card .ant-card-head {
+  border-bottom: 1px solid #f0f0f0;
+  background: #fafafa;
+}
+
+.related-functions-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.functions-list {
+  display: grid;
+  gap: 16px;
+}
+
+.function-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+  transition: all 0.3s ease;
+}
+
+.function-item:hover {
+  background: #e9ecef;
+  transform: translateX(4px);
+}
+
+.function-info h4 {
+  margin: 0 0 8px 0;
+  color: #262626;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.function-info p {
+  margin: 0;
+  color: #8c8c8c;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.function-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.hash-id {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 12px;
+  color: #595959;
+  background: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.status {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: #f6ffed;
+  color: #52c41a;
+  border: 1px solid #b7eb8f;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .function-item {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .function-meta {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .stats-card {
+    margin-bottom: 16px;
+  }
+}
+
+@media (max-width: 576px) {
+  .page-container {
+    padding: 0 12px;
+  }
+
+  .function-item {
+    padding: 12px;
+  }
+
+  .function-info h4 {
+    font-size: 14px;
+  }
+
+  .function-info p {
+    font-size: 13px;
+  }
+}

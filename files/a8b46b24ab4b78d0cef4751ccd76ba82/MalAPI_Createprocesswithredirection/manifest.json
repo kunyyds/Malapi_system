@@ -1,0 +1,19 @@
+{
+  "status": "ok",
+  "root_function": "sub_402aab",
+  "alias": "MalAPI_Createprocesswithredirection",
+  "summary": "创建进程并支持标准输入/输出/错误重定向，通过管道或现有句柄实现进程间通信，支持多种创建标志和回退执行机制",
+  "attck": [
+    "T1055",
+    "T1106",
+    "T1569.002"
+  ],
+  "children_aliases": {
+    "sub_402a74": "HandleDuplicator",
+    "sub_40356d": "Heapallocandlink"
+  },
+  "source_hlil": "D:\\Experimental data\\ori100\\extracted\\malicious\\roi_decomp\\a8b46b24ab4b78d0cef4751ccd76ba82\\0x402aab.hlil.c",
+  "alias_map_json": "D:\\Experimental data\\ori100\\extracted\\malicious\\alias_map\\a8b46b24ab4b78d0cef4751ccd76ba82\\0x402aab.hlil\\sub_402aab_alias_map.json",
+  "generated_cpp": "D:\\Experimental data\\ori100\\extracted\\malicious\\cpp_api\\a8b46b24ab4b78d0cef4751ccd76ba82\\MalAPI_Createprocesswithredirection\\MalAPI_Createprocesswithredirection.cpp",
+  "tries": 1
+}

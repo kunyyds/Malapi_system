@@ -1,0 +1,15 @@
+{
+  "status": "ok",
+  "root_function": "_start",
+  "alias": "MalAPI_LzmaDecompressor",
+  "summary": "实现LZMA压缩算法的解压缩例程，使用基于范围编码的概率模型进行数据解码和重建",
+  "attck": [
+    "T1027.002: Software Packing",
+    "T1140: Deobfuscate/Decode Files or Information"
+  ],
+  "children_aliases": {},
+  "source_hlil": "D:\\Experimental data\\ori100\\extracted\\malicious\\roi_decomp\\ac43ddb3ada8e91fbf27a835fd367672\\0x424640.hlil.c",
+  "alias_map_json": "D:\\Experimental data\\ori100\\extracted\\malicious\\alias_map\\ac43ddb3ada8e91fbf27a835fd367672\\0x424640.hlil\\_start_alias_map.json",
+  "generated_cpp": "D:\\Experimental data\\ori100\\extracted\\malicious\\cpp_api\\ac43ddb3ada8e91fbf27a835fd367672\\MalAPI_LzmaDecompressor\\MalAPI_LzmaDecompressor.cpp",
+  "tries": 1
+}

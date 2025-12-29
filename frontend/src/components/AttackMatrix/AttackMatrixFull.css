@@ -1,0 +1,222 @@
+.attack-matrix-full {
+  padding: 20px;
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+
+.matrix-header {
+  margin-bottom: 20px;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.matrix-container {
+  background: white;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+}
+
+.matrix-column {
+  min-width: 120px;
+}
+
+.tactic-card .ant-card-head {
+  min-height: 80px;
+}
+
+.tactic-card .ant-card-head-title {
+  padding: 0;
+}
+
+.tactic-header {
+  text-align: center;
+  width: 100%;
+}
+
+.tactic-card .ant-card-body {
+  padding: 8px !important;
+}
+
+.technique-container {
+  margin-bottom: 4px;
+}
+
+.technique-card {
+  border: 1px solid #d9d9d9;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.technique-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+/* 强度样式 */
+.technique-card.intensity-none {
+  background-color: #ffffff;
+  border-color: #e8e8e8;
+}
+
+.technique-card.intensity-low {
+  background-color: #f6ffed;
+  border-color: #b7eb8f;
+}
+
+.technique-card.intensity-medium {
+  background-color: #fff7e6;
+  border-color: #ffd591;
+}
+
+.technique-card.intensity-high {
+  background-color: #fff1f0;
+  border-color: #ffccc7;
+}
+
+.technique-content {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.technique-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.expand-button {
+  margin-left: 4px;
+  padding: 2px;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: background-color 0.2s;
+}
+
+.expand-button:hover {
+  background-color: rgba(24, 144, 255, 0.1);
+}
+
+.sub-techniques-container {
+  margin-top: 4px;
+  padding-left: 4px;
+  border-left: 2px solid #1890ff;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sub-technique-card {
+  margin-bottom: 2px;
+  border: 1px solid #e8e8e8 !important;
+  background-color: #fafafa !important;
+}
+
+.sub-technique-card:hover {
+  background-color: #f0f8ff !important;
+  border-color: #91d5ff !important;
+}
+
+.sub-technique-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.sub-technique-id {
+  font-size: 9px;
+  color: #666;
+  font-weight: 600;
+  margin-bottom: 2px;
+  white-space: nowrap;
+}
+
+.sub-technique-name {
+  font-size: 9px;
+  color: #333;
+  line-height: 1.2;
+  word-wrap: break-word;
+  word-break: break-word;
+  width: 100%;
+}
+
+/* 滚动条样式 */
+.ant-card-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ant-card-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.ant-card-body::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.ant-card-body::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* 响应式设计 */
+@media (max-width: 1600px) {
+  .matrix-column .ant-card-head-title {
+    font-size: 11px !important;
+  }
+
+  .technique-card .ant-typography {
+    font-size: 9px !important;
+  }
+
+  .sub-technique-card .ant-typography {
+    font-size: 8px !important;
+  }
+}
+
+@media (max-width: 1200px) {
+  .attack-matrix-full {
+    padding: 10px;
+  }
+
+  .matrix-container {
+    padding: 8px;
+  }
+
+  .tactic-card .ant-card-head {
+    min-height: 60px;
+  }
+}
+
+/* Badge样式优化 */
+.ant-badge-count {
+  font-size: 10px !important;
+  height: 16px !important;
+  line-height: 16px !important;
+  min-width: 16px !important;
+  padding: 0 4px !important;
+}
+
+/* 卡片阴影效果 */
+.technique-card,
+.sub-technique-card {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.technique-card:hover,
+.sub-technique-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}

@@ -1,0 +1,19 @@
+{
+  "status": "ok",
+  "root_function": "sub_4bb2c8",
+  "alias": "MalAPI_Localecasemappinginitializer",
+  "summary": "初始化字符大小写映射表，根据系统代码页支持情况，构建ASCII字符或本地化字符的大小写转换映射，设置字符类型标志位",
+  "attck": [
+    "T1027",
+    "T1055",
+    "T1140"
+  ],
+  "children_aliases": {
+    "sub_4bf6a4": "Localemapperdispatcher",
+    "sub_4c2d52": "Stringtypedispatcher"
+  },
+  "source_hlil": "D:\\Experimental data\\ori100\\extracted\\malicious\\roi_decomp\\fb16c1dc07a1d1392e88a4b47f8f8312\\0x4bb2c8.hlil.c",
+  "alias_map_json": "D:\\Experimental data\\ori100\\extracted\\malicious\\alias_map\\fb16c1dc07a1d1392e88a4b47f8f8312\\0x4bb2c8.hlil\\sub_4bb2c8_alias_map.json",
+  "generated_cpp": "D:\\Experimental data\\ori100\\extracted\\malicious\\cpp_api\\fb16c1dc07a1d1392e88a4b47f8f8312\\MalAPI_Localecasemappinginitializer\\MalAPI_Localecasemappinginitializer.cpp",
+  "tries": 1
+}

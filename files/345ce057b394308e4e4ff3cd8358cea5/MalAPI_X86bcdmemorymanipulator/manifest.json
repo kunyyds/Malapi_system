@@ -1,0 +1,17 @@
+{
+  "status": "ok",
+  "root_function": "sub_4013c0",
+  "alias": "MalAPI_X86bcdmemorymanipulator",
+  "summary": "执行x86 BCD算术运算和内存操作，包含条件跳转和陷阱触发机制",
+  "attck": [
+    "T1490: Inhibit System Recovery",
+    "T1564: Hide Artifacts"
+  ],
+  "children_aliases": {
+    "sub_4013c7": "X86LegacyArithmeticTrap"
+  },
+  "source_hlil": "D:\\Experimental data\\ori100\\extracted\\malicious\\roi_decomp\\345ce057b394308e4e4ff3cd8358cea5\\0x4013c0.hlil.c",
+  "alias_map_json": "D:\\Experimental data\\ori100\\extracted\\malicious\\alias_map\\345ce057b394308e4e4ff3cd8358cea5\\0x4013c0.hlil\\sub_4013c0_alias_map.json",
+  "generated_cpp": "D:\\Experimental data\\ori100\\extracted\\malicious\\cpp_api\\345ce057b394308e4e4ff3cd8358cea5\\MalAPI_X86bcdmemorymanipulator\\MalAPI_X86bcdmemorymanipulator.cpp",
+  "tries": 1
+}

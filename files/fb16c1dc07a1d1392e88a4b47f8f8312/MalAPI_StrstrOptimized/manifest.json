@@ -1,0 +1,15 @@
+{
+  "status": "ok",
+  "root_function": "sub_4b8230",
+  "alias": "MalAPI_StrstrOptimized",
+  "summary": "优化的字符串查找函数，在字符串中查找子字符串的位置，使用逐字节和逐字优化的搜索算法",
+  "attck": [
+    "T1055: Process Injection",
+    "T1027: Obfuscated Files or Information"
+  ],
+  "children_aliases": {},
+  "source_hlil": "D:\\Experimental data\\ori100\\extracted\\malicious\\roi_decomp\\fb16c1dc07a1d1392e88a4b47f8f8312\\0x4b8230.hlil.c",
+  "alias_map_json": "D:\\Experimental data\\ori100\\extracted\\malicious\\alias_map\\fb16c1dc07a1d1392e88a4b47f8f8312\\0x4b8230.hlil\\sub_4b8230_alias_map.json",
+  "generated_cpp": "D:\\Experimental data\\ori100\\extracted\\malicious\\cpp_api\\fb16c1dc07a1d1392e88a4b47f8f8312\\MalAPI_StrstrOptimized\\MalAPI_StrstrOptimized.cpp",
+  "tries": 1
+}
