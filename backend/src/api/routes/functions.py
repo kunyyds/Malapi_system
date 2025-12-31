@@ -8,6 +8,7 @@ from sqlalchemy.orm import selectinload
 from sqlalchemy import select, func, and_, or_
 from typing import List, Optional
 from pydantic import BaseModel
+from pathlib import Path
 
 from src.database.connection import get_async_session
 from src.database.models import MalAPIFunction, AttCKMapping, FunctionChild, AttackTechnique, AttackTactic
@@ -183,9 +184,9 @@ async def get_function_detail(
     获取函数详情
     """
     try:
-        # 查询函数详情
+        # 查询函数详情，预加载 ATT&CK 映射关系
         query = select(MalAPIFunction).options(
-            selectinload(MalAPIFunction.attck_mappings),
+            selectinload(MalAPIFunction.attck_mappings).selectinload(AttCKMapping.technique),
             selectinload(MalAPIFunction.children)
         ).where(MalAPIFunction.id == function_id)
 
@@ -195,17 +196,18 @@ async def get_function_detail(
         if not function:
             raise HTTPException(status_code=404, detail="函数不存在")
 
-        # 转换为响应格式
-        techniques = [
-            {
-                "technique_id": tech.technique_id,
-                "technique_name": tech.technique_name,
-                "tactic_name": tech.tactic_name,
-                "description": tech.description
-            }
-            for tech in function.attck_mappings
-        ]
+        # 转换 ATT&CK 技术信息
+        techniques = []
+        for mapping in function.attck_mappings:
+            if mapping.technique:
+                techniques.append({
+                    "technique_id": mapping.technique.technique_id,
+                    "technique_name": mapping.technique.technique_name,
+                    "tactic_name": None,  # 可以后续从 technique.tactics 获取
+                    "description": mapping.technique.description
+                })
 
+        # 转换子函数信息
         children = [
             {
                 "child_function_name": child.child_function_name,
@@ -215,13 +217,27 @@ async def get_function_detail(
             for child in function.children
         ]
 
+        # 读取 C++ 代码内容
+        cpp_code_content = None
+        if function.cpp_filepath:
+            cpp_file = Path(function.cpp_filepath)
+            if cpp_file.exists():
+                try:
+                    with open(cpp_file, 'r', encoding='utf-8') as f:
+                        cpp_code_content = f.read()
+                    logger.info(f"成功读取 C++ 代码文件: {function.cpp_filepath}")
+                except Exception as e:
+                    logger.warning(f"读取 C++ 代码文件失败: {function.cpp_filepath}, 错误: {str(e)}")
+            else:
+                logger.warning(f"C++ 代码文件不存在: {function.cpp_filepath}")
+
         return FunctionResponse(
             id=function.id,
             hash_id=function.hash_id,
             alias=function.alias,
             root_function=function.root_function,
             summary=function.summary,
-            cpp_code=function.cpp_code,
+            cpp_code=cpp_code_content,
             status=function.status,
             created_at=function.created_at.isoformat() if function.created_at else "",
             updated_at=function.updated_at.isoformat() if function.updated_at else "",

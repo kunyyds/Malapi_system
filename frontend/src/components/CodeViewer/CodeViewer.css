@@ -34,14 +34,23 @@
   overflow-x: auto;
   background: #282c34;
   border-top: 1px solid #3d424d;
+  /* 确保滚动条始终可见 */
+  max-height: 600px;
 }
 
 .code-content {
-  padding: 20px;
+  /* 移除 padding，改用 SyntaxHighlighter 的内部 padding */
+  padding: 0;
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
   font-size: 14px;
   line-height: 1.6;
   color: #abb2bf;
+}
+
+/* 确保 SyntaxHighlighter 生成的代码容器可以正常滚动 */
+.code-content > div {
+  overflow-x: auto;
+  overflow-y: visible;
 }
 
 /* 代码高亮样式 */

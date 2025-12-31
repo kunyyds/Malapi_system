@@ -99,19 +99,26 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
       >
         <div
           className="code-container"
-          style={{ maxHeight: isFullscreen ? '100vh' : maxHeight }}
+          style={{
+            maxHeight: isFullscreen ? 'calc(100vh - 150px)' : maxHeight,
+            overflowY: 'auto',
+            overflowX: 'auto'
+          }}
         >
           <div className="code-content">
             <SyntaxHighlighter
               language={language}
               style={vscDarkPlus}
               showLineNumbers={showLineNumbers}
-              wrapLines={true}
+              wrapLines={false}
               customStyle={{
                 margin: 0,
                 borderRadius: 0,
                 fontSize: '14px',
-                background: '#1e1e1e'
+                background: 'transparent',
+                padding: '20px',
+                minWidth: '100%',
+                width: 'fit-content'
               }}
             >
               {processedCode}
@@ -152,18 +159,21 @@ const CodeViewer: React.FC<CodeViewerProps> = ({
               }
               bodyStyle={{ padding: 0 }}
             >
-              <div className="code-container">
+              <div className="code-container" style={{ overflowY: 'auto', overflowX: 'auto' }}>
                 <div className="code-content">
                   <SyntaxHighlighter
                     language={language}
                     style={vscDarkPlus}
                     showLineNumbers={showLineNumbers}
-                    wrapLines={true}
+                    wrapLines={false}
                     customStyle={{
                       margin: 0,
                       borderRadius: 0,
                       fontSize: '14px',
-                      background: '#1e1e1e'
+                      background: 'transparent',
+                      padding: '20px',
+                      minWidth: '100%',
+                      width: 'fit-content'
                     }}
                   >
                     {processedCode}

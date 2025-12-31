@@ -76,47 +76,6 @@ export const functionsApi = {
 
   // 获取函数详情
   getFunctionDetail: async (functionId: number): Promise<MalAPIFunction> => {
-    // 开发环境使用模拟数据
-    if (process.env.NODE_ENV === 'development') {
-      await new Promise(resolve => setTimeout(resolve, 300));
-      return {
-        id: functionId,
-        hash_id: `hash_${functionId}`,
-        alias: `MalAPI_Function_${functionId}`,
-        root_function: 'main',
-        summary: '这是一个示例恶意软件API函数',
-        cpp_code: `// 示例C++代码
-#include <iostream>
-#include <string>
-
-void MalAPI_Function_${functionId}() {
-    // 恶意代码示例
-    std::string payload = "malicious_payload";
-
-    // 执行恶意操作
-    execute_payload(payload);
-
-    std::cout << "Function ${functionId} executed" << std::endl;
-}
-
-int main() {
-    MalAPI_Function_${functionId}();
-    return 0;
-}`,
-        cpp_filepath: `/path/to/function_${functionId}.cpp`,
-        status: 'ok',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        techniques: [
-          {
-            technique_id: 'T1055',
-            technique_name: 'Process Injection',
-            tactic_name: 'Defense Evasion'
-          }
-        ],
-        children: []
-      };
-    }
     const response = await api.get(`/functions/${functionId}`);
     return response.data;
   },

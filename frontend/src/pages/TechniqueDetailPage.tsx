@@ -293,7 +293,7 @@ const TechniqueDetailPage: React.FC = () => {
             ) : '未分类'}
           </Descriptions.Item>
           <Descriptions.Item label="关联函数数量">
-            <Badge count={technique.function_count} style={{ backgroundColor: '#52c41a' }} />
+            <Badge count={pagination.total || technique.function_count} style={{ backgroundColor: '#52c41a' }} />
           </Descriptions.Item>
 
           {/* 额外字段 */}
