@@ -4,14 +4,15 @@ ATT&CK 数据 API 路由
 提供 MITRE ATT&CK 数据查询接口，支持战术、技术、子技术的查询和筛选。
 """
 
-from fastapi import APIRouter, Depends, Query, HTTPException
-from sqlalchemy import select, and_
+from fastapi import APIRouter, Depends, Query, HTTPException, Response
+from fastapi.responses import JSONResponse
+from sqlalchemy import select, and_, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Optional
 from pydantic import BaseModel
 
 from src.database.connection import get_async_session
-from src.database.models import AttackTactic, AttackTechnique
+from src.database.models import AttackTactic, AttackTechnique, MalAPIFunction, AttCKMapping
 from src.utils.logger import setup_logger
 
 logger = setup_logger(__name__)
@@ -267,6 +268,78 @@ async def get_technique_details(
 
     logger.info(f"获取技术详情: {technique_id} (包含 {len(response_data['subtechniques'])} 个子技术, {len(response_data['tactics'])} 个战术)")
     return response_data
+
+
+@router.get("/techniques/{technique_id}/functions")
+async def get_technique_functions(
+    technique_id: str,
+    page: int = Query(1, ge=1, description="页码"),
+    page_size: int = Query(10, ge=1, le=100, description="每页大小"),
+    session: AsyncSession = Depends(get_async_session)
+):
+    """
+    获取指定技术关联的函数列表
+
+    返回与该技术相关的所有 MalAPI 函数，支持分页。
+    """
+    # 验证技术是否存在
+    tech_result = await session.execute(
+        select(AttackTechnique).where(AttackTechnique.technique_id == technique_id)
+    )
+    technique = tech_result.scalar_one_or_none()
+
+    if not technique:
+        raise HTTPException(status_code=404, detail=f"技术不存在: {technique_id}")
+
+    # 获取总数
+    count_result = await session.execute(
+        select(func.count())
+        .select_from(AttCKMapping)
+        .where(AttCKMapping.technique_id == technique_id)
+    )
+    total = count_result.scalar()
+
+    # 获取函数列表
+    query = (
+        select(MalAPIFunction)
+        .join(AttCKMapping, MalAPIFunction.id == AttCKMapping.function_id)
+        .where(AttCKMapping.technique_id == technique_id)
+        .order_by(MalAPIFunction.id)
+    )
+
+    # 分页
+    offset = (page - 1) * page_size
+    query = query.offset(offset).limit(page_size)
+
+    result = await session.execute(query)
+    functions = result.scalars().all()
+
+    # 构建响应
+    response_data = []
+    for func_item in functions:
+        response_data.append({
+            "id": func_item.id,
+            "hash_id": func_item.hash_id,
+            "alias": func_item.alias,
+            "root_function": func_item.root_function,
+            "summary": func_item.summary,
+            "status": func_item.status,
+            "created_at": func_item.created_at.isoformat() if func_item.created_at else None,
+            "updated_at": func_item.updated_at.isoformat() if func_item.updated_at else None,
+        })
+
+    logger.info(f"获取技术 {technique_id} 的函数列表: 第 {page} 页，共 {total} 个函数")
+
+    # 返回响应
+    return JSONResponse(
+        content=response_data,
+        headers={
+            "X-Total-Count": str(total),
+            "X-Page": str(page),
+            "X-Page-Size": str(page_size),
+            "X-Total-Pages": str((total + page_size - 1) // page_size)
+        }
+    )
 
 
 @router.get("/matrix", response_model=List[TacticMatrixModel])

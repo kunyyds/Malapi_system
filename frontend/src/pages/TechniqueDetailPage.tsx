@@ -22,7 +22,7 @@ import {
   InfoCircleOutlined,
   BulbOutlined
 } from '@ant-design/icons';
-import { functionsApi, analysisApi } from '../services/api';
+import { analysisApi } from '../services/api';
 import { attackApiService } from '../services/attackApi';
 import { SubTechniqueInfo, TechniqueDetailModel } from '../types';
 
@@ -119,8 +119,14 @@ const TechniqueDetailPage: React.FC = () => {
 
   const [technique, setTechnique] = useState<Technique | null>(null);
   const [functions, setFunctions] = useState<Function[]>([]);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0
+  });
   const [analysisResults, setAnalysisResults] = useState<Record<number, CodeAnalysis>>({});
   const [loading, setLoading] = useState(true);
+  const [functionsLoading, setFunctionsLoading] = useState(false);
   const [analysisLoading, setAnalysisLoading] = useState<Record<number, boolean>>({});
 
   const loadTechniqueDetail = useCallback(async () => {
@@ -147,7 +153,7 @@ const TechniqueDetailPage: React.FC = () => {
         technique_name: techniqueData.technique_name,
         tactic_name: tacticName,
         description: techniqueData.description || techniqueData.mitre_description,
-        function_count: 0, // TODO: 需要从函数映射表统计
+        function_count: 0, // 稍后加载实际数量
         is_sub_technique: techniqueData.is_sub_technique,
         parent_technique: techniqueData.parent_technique_id ? {
           technique_id: techniqueData.parent_technique_id,
@@ -161,10 +167,8 @@ const TechniqueDetailPage: React.FC = () => {
         platforms: techniqueData.platforms
       });
 
-      // TODO: 加载相关函数列表
-      // const functionResponse = await functionsApi.getFunctions({ technique_id: techniqueId });
-      // setFunctions(functionResponse.functions);
-      setFunctions([]);
+      // 加载相关函数列表
+      loadFunctions(1, 10);
 
     } catch (error) {
       message.error('加载技术详情失败');
@@ -174,11 +178,35 @@ const TechniqueDetailPage: React.FC = () => {
     }
   }, [techniqueId]);
 
+  const loadFunctions = async (page: number, pageSize: number) => {
+    try {
+      setFunctionsLoading(true);
+
+      const response = await attackApiService.getTechniqueFunctions(techniqueId!, page, pageSize);
+
+      setFunctions(response.functions);
+      setPagination({
+        current: response.page,
+        pageSize: response.pageSize,
+        total: response.total
+      });
+
+      // 更新技术对象中的函数数量
+      setTechnique(prev => prev ? { ...prev, function_count: response.total } : null);
+
+    } catch (error) {
+      message.error('加载函数列表失败');
+      console.error('Failed to load functions:', error);
+    } finally {
+      setFunctionsLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (techniqueId) {
       loadTechniqueDetail();
     }
-  }, [techniqueId, loadTechniqueDetail]);
+  }, [techniqueId]);
 
   const handleAnalyzeCode = async (functionId: number) => {
     try {
@@ -370,7 +398,7 @@ const TechniqueDetailPage: React.FC = () => {
                   hoverable
                   onClick={() => navigate(`/technique/${subTech.sub_id}`)}
                   style={{ cursor: 'pointer' }}
-                  bodyStyle={{ padding: '16px' }}
+                  styles={{ body: { padding: '16px' } }}
                 >
                   <Space direction="vertical" size={4} style={{ width: '100%' }}>
                     <Space>
@@ -394,14 +422,15 @@ const TechniqueDetailPage: React.FC = () => {
         title={
           <Space>
             <CodeOutlined />
-            <span>Procedure Examples ({functions.length}个函数)</span>
+            <span>Procedure Examples ({pagination.total}个函数)</span>
           </Space>
         }
       >
-        {functions.length === 0 ? (
+        {functions.length === 0 && !functionsLoading ? (
           <Empty description="暂无相关函数" />
         ) : (
           <Table
+            loading={functionsLoading}
             columns={[
               {
                 title: '程序API名称',
@@ -468,9 +497,14 @@ const TechniqueDetailPage: React.FC = () => {
             dataSource={functions}
             rowKey="id"
             pagination={{
-              pageSize: 10,
+              current: pagination.current,
+              pageSize: pagination.pageSize,
+              total: pagination.total,
               showSizeChanger: true,
-              showTotal: (total) => `共 ${total} 个函数`
+              showTotal: (total) => `共 ${total} 个函数`,
+              onChange: (page, pageSize) => {
+                loadFunctions(page, pageSize);
+              }
             }}
           />
         )}

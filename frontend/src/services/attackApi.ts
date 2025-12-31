@@ -173,6 +173,35 @@ export class AttackApiService {
       tech => tech.parent_technique_id === parentTechniqueId && !tech.revoked
     );
   }
+
+  /**
+   * 获取技术关联的函数列表
+   * @param techniqueId 技术 ID
+   * @param page 页码
+   * @param pageSize 每页大小
+   */
+  static async getTechniqueFunctions(
+    techniqueId: string,
+    page: number = 1,
+    pageSize: number = 10
+  ): Promise<{ functions: any[], total: number, page: number, pageSize: number, totalPages: number }> {
+    const response = await attackApi.get(`/attack/techniques/${techniqueId}/functions`, {
+      params: { page, page_size: pageSize }
+    });
+
+    const total = parseInt(response.headers['x-total-count'] || '0', 10);
+    const currentPage = parseInt(response.headers['x-page'] || '1', 10);
+    const currentPageSize = parseInt(response.headers['x-page-size'] || '10', 10);
+    const totalPages = parseInt(response.headers['x-total-pages'] || '1', 10);
+
+    return {
+      functions: response.data,
+      total,
+      page: currentPage,
+      pageSize: currentPageSize,
+      totalPages
+    };
+  }
 }
 
 // 导出便捷使用的服务实例
