@@ -59,6 +59,68 @@ export interface AttackMatrixData {
   sub_id?: string;
   function_count: number;
   functions?: any[];
+  has_subtechniques?: boolean;
+}
+
+// ATT&CK战术响应模型
+export interface TacticModel {
+  id: number;
+  tactic_id: string;
+  tactic_name_en: string;
+  tactic_name_cn?: string;
+  description?: string;
+  stix_id?: string;
+}
+
+// ATT&CK技术响应模型
+export interface TechniqueModel {
+  id: number;
+  technique_id: string;
+  technique_name: string;
+  tactics: string[];
+  is_sub_technique: boolean;
+  parent_technique_id?: string;
+  description?: string;
+  stix_id?: string;
+  mitre_description?: string;
+  mitre_url?: string;
+  mitre_detection?: string;
+  platforms?: string;
+  revoked: boolean;
+  deprecated: boolean;
+  data_source: string;
+}
+
+// ATT&CK技术详情模型(包含子技术)
+export interface TechniqueDetailModel extends TechniqueModel {
+  subtechniques?: TechniqueModel[];
+  tactics_details?: TacticModel[];
+}
+
+// ATT&CK矩阵单元格模型
+export interface MatrixCellModel {
+  technique_id: string;
+  technique_name: string;
+  has_subtechniques: boolean;
+}
+
+// ATT&CK战术矩阵模型
+export interface TacticMatrixModel {
+  tactic_id: string;
+  tactic_name?: string;
+  tactic_name_cn?: string;
+  techniques: MatrixCellModel[];
+}
+
+// ATT&CK统计信息
+export interface AttackStatistics {
+  tactics: number;
+  parent_techniques: number;
+  subtechniques: number;
+  total_techniques: number;
+  revoked: number;
+  data_source: string;
+  stix_version: string;
 }
 
 // 搜索相关类型

@@ -8,7 +8,8 @@ import {
   CodeAnalysisRequest,
   CodeAnalysisResponse,
   AttackPlanRequest,
-  AttackPlanResponse
+  AttackPlanResponse,
+  TacticMatrixModel
 } from '@/types';
 
 // 创建axios实例
@@ -48,52 +49,6 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-// 模拟数据
-const mockAttackMatrixData: AttackMatrixData[] = [
-  {
-    technique_id: 'T1190',
-    technique_name: 'Exploit Public-Facing Application',
-    tactic_name: 'Initial Access',
-    function_count: 5
-  },
-  {
-    technique_id: 'T1078',
-    technique_name: 'Valid Accounts',
-    tactic_name: 'Initial Access',
-    function_count: 3
-  },
-  {
-    technique_id: 'T1059',
-    technique_name: 'Command and Scripting Interpreter',
-    tactic_name: 'Execution',
-    function_count: 8
-  },
-  {
-    technique_id: 'T1055',
-    technique_name: 'Process Injection',
-    tactic_name: 'Execution',
-    function_count: 12
-  },
-  {
-    technique_id: 'T1027',
-    technique_name: 'Obfuscated Files or Information',
-    tactic_name: 'Defense Evasion',
-    function_count: 15
-  },
-  {
-    technique_id: 'T1140',
-    technique_name: 'Deobfuscate/Decode Files or Information',
-    tactic_name: 'Defense Evasion',
-    function_count: 9
-  },
-  {
-    technique_id: 'T1003',
-    technique_name: 'OS Credential Dumping',
-    tactic_name: 'Credential Access',
-    function_count: 11
-  }
-];
 
 // API接口方法
 export const functionsApi = {
@@ -168,12 +123,48 @@ int main() {
 
   // 获取ATT&CK矩阵数据
   getAttackMatrix: async (): Promise<AttackMatrixData[]> => {
-    // 开发环境使用模拟数据
-    if (process.env.NODE_ENV === 'development') {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      return mockAttackMatrixData;
-    }
-    const response = await api.get('/functions/attack-matrix');
+    const response: AxiosResponse<TacticMatrixModel[]> = await api.get('/attack/matrix');
+
+    // 将后端返回的矩阵数据转换为前端需要的格式
+    const matrixData: AttackMatrixData[] = [];
+
+    response.data.forEach((tactic: TacticMatrixModel) => {
+      tactic.techniques.forEach((tech) => {
+        matrixData.push({
+          technique_id: tech.technique_id,
+          technique_name: tech.technique_name,
+          tactic_name: tactic.tactic_name || tactic.tactic_name_cn || tactic.tactic_id,
+          tactic_id: tactic.tactic_id,
+          function_count: 0, // TODO: 后续可以从函数映射表获取实际数量
+          has_subtechniques: tech.has_subtechniques
+        });
+      });
+    });
+
+    return matrixData;
+  },
+
+  // 获取ATT&CK统计数据
+  getAttackStatistics: async (): Promise<any> => {
+    const response = await api.get('/attack/statistics');
+    return response.data;
+  },
+
+  // 获取技术列表
+  getTechniques: async (params?: {
+    tactic_id?: string;
+    platform?: string;
+    include_subtechniques?: boolean;
+  }): Promise<any[]> => {
+    const response = await api.get('/attack/techniques', { params });
+    return response.data;
+  },
+
+  // 获取技术详情
+  getTechniqueDetail: async (techniqueId: string, include_subtechniques: boolean = true): Promise<any> => {
+    const response = await api.get(`/attack/techniques/${techniqueId}`, {
+      params: { include_subtechniques }
+    });
     return response.data;
   },
 
@@ -184,197 +175,197 @@ int main() {
   },
 
   // 获取技术详情
-  getTechniqueDetail: async (techniqueId: string): Promise<any> => {
-    // 开发环境使用模拟数据
-    if (process.env.NODE_ENV === 'development') {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      return {
-        technique_id: techniqueId,
-        technique_name: `技术 ${techniqueId}`,
-        tactic_name: '示例战术',
-        description: '这是技术的示例描述，用于开发环境测试。实际描述将从数据库中获取。',
-        function_count: 3,
-        functions: [
-          {
-            id: 1,
-            hash_id: 'hash_1',
-            alias: `MalAPI_${techniqueId}_1`,
-            root_function: 'main',
-            summary: '示例函数1 - 用于演示技术详情页面',
-            cpp_code: `// 技术编号: ${techniqueId} - 示例函数1
-#include <iostream>
-#include <windows.h>
+//   getTechniqueDetail: async (techniqueId: string): Promise<any> => {
+//     // 开发环境使用模拟数据
+//     if (process.env.NODE_ENV === 'development') {
+//       await new Promise(resolve => setTimeout(resolve, 500));
+//       return {
+//         technique_id: techniqueId,
+//         technique_name: `技术 ${techniqueId}`,
+//         tactic_name: '示例战术',
+//         description: '这是技术的示例描述，用于开发环境测试。实际描述将从数据库中获取。',
+//         function_count: 3,
+//         functions: [
+//           {
+//             id: 1,
+//             hash_id: 'hash_1',
+//             alias: `MalAPI_${techniqueId}_1`,
+//             root_function: 'main',
+//             summary: '示例函数1 - 用于演示技术详情页面',
+//             cpp_code: `// 技术编号: ${techniqueId} - 示例函数1
+// #include <iostream>
+// #include <windows.h>
 
-void MalAPI_${techniqueId}_1() {
-    // 恶意代码示例
-    DWORD processId;
-    HANDLE hProcess;
+// void MalAPI_${techniqueId}_1() {
+//     // 恶意代码示例
+//     DWORD processId;
+//     HANDLE hProcess;
 
-    // 获取目标进程ID
-    std::cout << "输入目标进程ID: ";
-    std::cin >> processId;
+//     // 获取目标进程ID
+//     std::cout << "输入目标进程ID: ";
+//     std::cin >> processId;
 
-    // 打开目标进程
-    hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, processId);
-    if (hProcess == NULL) {
-        std::cerr << "无法打开进程" << std::endl;
-        return;
-    }
+//     // 打开目标进程
+//     hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, processId);
+//     if (hProcess == NULL) {
+//         std::cerr << "无法打开进程" << std::endl;
+//         return;
+//     }
 
-    // 分配内存空间
-    LPVOID pRemoteMemory = VirtualAllocEx(hProcess, NULL, 1024, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+//     // 分配内存空间
+//     LPVOID pRemoteMemory = VirtualAllocEx(hProcess, NULL, 1024, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
 
-    // 恶意操作
-    std::cout << "技术 ${techniqueId} 恶意操作执行完成" << std::endl;
+//     // 恶意操作
+//     std::cout << "技术 ${techniqueId} 恶意操作执行完成" << std::endl;
 
-    CloseHandle(hProcess);
-}`,
-            status: 'ok',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-            techniques: [
-              {
-                technique_id: techniqueId,
-                technique_name: `技术 ${techniqueId}`,
-                tactic_name: '示例战术',
-                description: '技术描述'
-              }
-            ],
-            children: [
-              {
-                child_function_name: 'sub_func_1',
-                child_alias: '子函数1',
-                child_description: '子函数描述'
-              }
-            ]
-          },
-          {
-            id: 2,
-            hash_id: 'hash_2',
-            alias: `MalAPI_${techniqueId}_2`,
-            root_function: 'main',
-            summary: '示例函数2 - 展示不同的恶意代码模式',
-            cpp_code: `// 技术编号: ${techniqueId} - 示例函数2
-#include <iostream>
-#include <string>
-#include <vector>
+//     CloseHandle(hProcess);
+// }`,
+//             status: 'ok',
+//             created_at: new Date().toISOString(),
+//             updated_at: new Date().toISOString(),
+//             techniques: [
+//               {
+//                 technique_id: techniqueId,
+//                 technique_name: `技术 ${techniqueId}`,
+//                 tactic_name: '示例战术',
+//                 description: '技术描述'
+//               }
+//             ],
+//             children: [
+//               {
+//                 child_function_name: 'sub_func_1',
+//                 child_alias: '子函数1',
+//                 child_description: '子函数描述'
+//               }
+//             ]
+//           },
+//           {
+//             id: 2,
+//             hash_id: 'hash_2',
+//             alias: `MalAPI_${techniqueId}_2`,
+//             root_function: 'main',
+//             summary: '示例函数2 - 展示不同的恶意代码模式',
+//             cpp_code: `// 技术编号: ${techniqueId} - 示例函数2
+// #include <iostream>
+// #include <string>
+// #include <vector>
 
-void MalAPI_${techniqueId}_2() {
-    std::vector<std::string> payloads = {
-        "payload_type_1",
-        "payload_type_2",
-        "payload_type_3"
-    };
+// void MalAPI_${techniqueId}_2() {
+//     std::vector<std::string> payloads = {
+//         "payload_type_1",
+//         "payload_type_2",
+//         "payload_type_3"
+//     };
 
-    for (const auto& payload : payloads) {
-        // 处理不同类型的恶意负载
-        std::cout << "处理负载: " << payload << std::endl;
+//     for (const auto& payload : payloads) {
+//         // 处理不同类型的恶意负载
+//         std::cout << "处理负载: " << payload << std::endl;
 
-        // 模拟恶意操作
-        execute_malicious_action(payload);
-    }
+//         // 模拟恶意操作
+//         execute_malicious_action(payload);
+//     }
 
-    std::cout << "技术 ${techniqueId} 批量操作完成" << std::endl;
-}
+//     std::cout << "技术 ${techniqueId} 批量操作完成" << std::endl;
+// }
 
-void execute_malicious_action(const std::string& payload) {
-    // 恶意操作实现
-    std::cout << "执行恶意操作: " << payload << std::endl;
-}`,
-            status: 'ok',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-            techniques: [
-              {
-                technique_id: techniqueId,
-                technique_name: `技术 ${techniqueId}`,
-                tactic_name: '示例战术',
-                description: '技术描述'
-              }
-            ],
-            children: []
-          },
-          {
-            id: 3,
-            hash_id: 'hash_3',
-            alias: `MalAPI_${techniqueId}_3`,
-            root_function: 'main',
-            summary: '示例函数3 - 高级恶意代码技术',
-            cpp_code: `// 技术编号: ${techniqueId} - 示例函数3
-#include <iostream>
-#include <windows.h>
-#include <tlhelp32.h>
+// void execute_malicious_action(const std::string& payload) {
+//     // 恶意操作实现
+//     std::cout << "执行恶意操作: " << payload << std::endl;
+// }`,
+//             status: 'ok',
+//             created_at: new Date().toISOString(),
+//             updated_at: new Date().toISOString(),
+//             techniques: [
+//               {
+//                 technique_id: techniqueId,
+//                 technique_name: `技术 ${techniqueId}`,
+//                 tactic_name: '示例战术',
+//                 description: '技术描述'
+//               }
+//             ],
+//             children: []
+//           },
+//           {
+//             id: 3,
+//             hash_id: 'hash_3',
+//             alias: `MalAPI_${techniqueId}_3`,
+//             root_function: 'main',
+//             summary: '示例函数3 - 高级恶意代码技术',
+//             cpp_code: `// 技术编号: ${techniqueId} - 示例函数3
+// #include <iostream>
+// #include <windows.h>
+// #include <tlhelp32.h>
 
-DWORD GetProcessIdByName(const wchar_t* processName) {
-    DWORD processId = 0;
-    HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+// DWORD GetProcessIdByName(const wchar_t* processName) {
+//     DWORD processId = 0;
+//     HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 
-    if (snapshot != INVALID_HANDLE_VALUE) {
-        PROCESSENTRY32W entry;
-        entry.dwSize = sizeof(entry);
+//     if (snapshot != INVALID_HANDLE_VALUE) {
+//         PROCESSENTRY32W entry;
+//         entry.dwSize = sizeof(entry);
 
-        if (Process32FirstW(snapshot, &entry)) {
-            do {
-                if (wcscmp(entry.szExeFile, processName) == 0) {
-                    processId = entry.th32ProcessID;
-                    break;
-                }
-            } while (Process32NextW(snapshot, &entry));
-        }
-    }
+//         if (Process32FirstW(snapshot, &entry)) {
+//             do {
+//                 if (wcscmp(entry.szExeFile, processName) == 0) {
+//                     processId = entry.th32ProcessID;
+//                     break;
+//                 }
+//             } while (Process32NextW(snapshot, &entry));
+//         }
+//     }
 
-    CloseHandle(snapshot);
-    return processId;
-}
+//     CloseHandle(snapshot);
+//     return processId;
+// }
 
-void MalAPI_${techniqueId}_3() {
-    const wchar_t* targetProcess = L"explorer.exe";
-    DWORD processId = GetProcessIdByName(targetProcess);
+// void MalAPI_${techniqueId}_3() {
+//     const wchar_t* targetProcess = L"explorer.exe";
+//     DWORD processId = GetProcessIdByName(targetProcess);
 
-    if (processId != 0) {
-        std::wcout << L"找到进程 " << targetProcess << L", PID: " << processId << std::endl;
+//     if (processId != 0) {
+//         std::wcout << L"找到进程 " << targetProcess << L", PID: " << processId << std::endl;
 
-        // 执行技术 ${techniqueId} 的恶意操作
-        perform_technique_attack(processId);
-    } else {
-        std::wcout << L"未找到进程 " << targetProcess << std::endl;
-    }
-}
+//         // 执行技术 ${techniqueId} 的恶意操作
+//         perform_technique_attack(processId);
+//     } else {
+//         std::wcout << L"未找到进程 " << targetProcess << std::endl;
+//     }
+// }
 
-void perform_technique_attack(DWORD processId) {
-    // 技术 ${techniqueId} 的具体实现
-    std::cout << "对进程 " << processId << " 执行技术 ${techniqueId} 攻击" << std::endl;
-}`,
-            status: 'ok',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-            techniques: [
-              {
-                technique_id: techniqueId,
-                technique_name: `技术 ${techniqueId}`,
-                tactic_name: '示例战术',
-                description: '技术描述'
-              }
-            ],
-            children: [
-              {
-                child_function_name: 'GetProcessIdByName',
-                child_alias: '获取进程ID',
-                child_description: '通过进程名获取进程ID'
-              },
-              {
-                child_function_name: 'perform_technique_attack',
-                child_alias: '执行技术攻击',
-                child_description: '执行特定技术的攻击操作'
-              }
-            ]
-          }
-        ]
-      };
-    }
-    const response = await api.get(`/functions/techniques/${techniqueId}`);
-    return response.data;
-  },
+// void perform_technique_attack(DWORD processId) {
+//     // 技术 ${techniqueId} 的具体实现
+//     std::cout << "对进程 " << processId << " 执行技术 ${techniqueId} 攻击" << std::endl;
+// }`,
+//             status: 'ok',
+//             created_at: new Date().toISOString(),
+//             updated_at: new Date().toISOString(),
+//             techniques: [
+//               {
+//                 technique_id: techniqueId,
+//                 technique_name: `技术 ${techniqueId}`,
+//                 tactic_name: '示例战术',
+//                 description: '技术描述'
+//               }
+//             ],
+//             children: [
+//               {
+//                 child_function_name: 'GetProcessIdByName',
+//                 child_alias: '获取进程ID',
+//                 child_description: '通过进程名获取进程ID'
+//               },
+//               {
+//                 child_function_name: 'perform_technique_attack',
+//                 child_alias: '执行技术攻击',
+//                 child_description: '执行特定技术的攻击操作'
+//               }
+//             ]
+//           }
+//         ]
+//       };
+//     }
+//     const response = await api.get(`/functions/techniques/${techniqueId}`);
+//     return response.data;
+//   },
 };
 
 export const analysisApi = {

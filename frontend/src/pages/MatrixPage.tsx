@@ -8,8 +8,8 @@ import {
 } from '@ant-design/icons';
 import AttackMatrixSimple from '@/components/AttackMatrix/AttackMatrixSimple';
 import { functionsApi } from '@/services/api';
+import { attackApiService } from '@/services/attackApi';
 import { AttackMatrixData, MalAPIFunction } from '@/types';
-import { mockAttackMatrixData } from '@/data/mockData';
 import './MatrixPage.css';
 
 const MatrixPage: React.FC = () => {
@@ -31,21 +31,30 @@ const MatrixPage: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      // 使用模拟数据进行测试
-      const matrixResponse = mockAttackMatrixData;
-
+      // 使用专门的 ATT&CK API 服务获取矩阵数据
+      const matrixResponse = await attackApiService.getMatrixDataForFrontend();
       setMatrixData(matrixResponse);
 
-      // 计算统计数据
-      const totalFunctions = matrixResponse.reduce((sum, item) => sum + item.function_count, 0);
-      const totalTechniques = matrixResponse.length;
-
-      setStatistics({
-        totalFunctions,
-        totalTechniques,
-        recentAnalyses: Math.floor(totalFunctions * 0.15), // 模拟数据
-        totalCost: Math.floor(totalFunctions * 0.8) // 模拟数据
-      });
+      // 获取统计数据
+      try {
+        const statsResponse = await attackApiService.getStatistics();
+        setStatistics({
+          totalFunctions: 0, // TODO: 需要从函数映射表统计
+          totalTechniques: statsResponse.total_techniques || matrixResponse.length,
+          recentAnalyses: 0, // 暂无此数据
+          totalCost: 0 // 暂无此数据
+        });
+      } catch (statsErr) {
+        console.warn('获取统计数据失败,使用默认值:', statsErr);
+        // 使用矩阵数据计算基本统计
+        const totalTechniques = matrixResponse.length;
+        setStatistics({
+          totalFunctions: 0,
+          totalTechniques,
+          recentAnalyses: 0,
+          totalCost: 0
+        });
+      }
 
     } catch (err: any) {
       setError(err.message || '加载ATT&CK矩阵数据失败');

@@ -23,9 +23,51 @@ import {
   BulbOutlined
 } from '@ant-design/icons';
 import { functionsApi, analysisApi } from '../services/api';
-import { SubTechniqueInfo } from '../types';
+import { attackApiService } from '../services/attackApi';
+import { SubTechniqueInfo, TechniqueDetailModel } from '../types';
 
 const { Title, Paragraph, Text } = Typography;
+
+/**
+ * 将文本中的 URL 转换为可点击的链接
+ */
+const renderTextWithLinks = (text: string): React.ReactNode => {
+  if (!text) return null;
+
+  // 分割文本为纯文本和 URL 的数组
+  // 匹配 http:// 或 https:// 开头,允许包含点号,遇到空格或右括号停止
+  const parts = text.split(/(https?:\/\/[^\s)]+)/g);
+
+  return (
+    <Paragraph>
+      {parts.map((part, index) => {
+        // 检查是否是 URL
+        if (part.match(/^(https?:\/\/[^\s)]+)/)) {
+          // 移除可能存在的右侧括号
+          const cleanUrl = part.replace(/\)$/, '');
+          return (
+            <a
+              key={index}
+              href={cleanUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: '#1890ff', textDecoration: 'underline' }}
+            >
+              {cleanUrl}
+            </a>
+          );
+        }
+        // 纯文本，需要处理换行符
+        return part.split('\n').map((line, lineIndex) => (
+          <span key={index + '-' + lineIndex}>
+            {line}
+            {lineIndex < part.split('\n').length - 1 && <br />}
+          </span>
+        ));
+      })}
+    </Paragraph>
+  );
+};
 
 interface Technique {
   technique_id: string;
@@ -39,6 +81,11 @@ interface Technique {
     technique_name: string;
   };
   sub_techniques?: SubTechniqueInfo[];
+  tactics?: string[];
+  mitre_description?: string;
+  mitre_url?: string;
+  mitre_detection?: string;
+  platforms?: string;
 }
 
 interface Function {
@@ -79,18 +126,46 @@ const TechniqueDetailPage: React.FC = () => {
   const loadTechniqueDetail = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await functionsApi.getTechniqueDetail(techniqueId!);
+
+      // 使用新的 attackApiService 获取技术详情
+      const techniqueData: TechniqueDetailModel = await attackApiService.getTechniqueDetail(techniqueId!, true);
+
+      // 转换子技术数据格式
+      const subTechniques = techniqueData.subtechniques?.map(sub => ({
+        sub_id: sub.technique_id,
+        sub_name: sub.technique_name,
+        function_count: 0 // TODO: 需要从函数映射表获取
+      })) || [];
+
+      // 转换战术名称
+      const tacticName = techniqueData.tactics_details?.[0]?.tactic_name_en ||
+                        techniqueData.tactics?.[0] ||
+                        techniqueData.tactics_details?.[0]?.tactic_name_cn;
+
       setTechnique({
-        technique_id: response.technique_id,
-        technique_name: response.technique_name,
-        tactic_name: response.tactic_name,
-        description: response.description,
-        function_count: response.function_count,
-        is_sub_technique: response.is_sub_technique,
-        parent_technique: response.parent_technique,
-        sub_techniques: response.sub_techniques
+        technique_id: techniqueData.technique_id,
+        technique_name: techniqueData.technique_name,
+        tactic_name: tacticName,
+        description: techniqueData.description || techniqueData.mitre_description,
+        function_count: 0, // TODO: 需要从函数映射表统计
+        is_sub_technique: techniqueData.is_sub_technique,
+        parent_technique: techniqueData.parent_technique_id ? {
+          technique_id: techniqueData.parent_technique_id,
+          technique_name: `父技术 ${techniqueData.parent_technique_id}` // TODO: 可以获取父技术的实际名称
+        } : undefined,
+        sub_techniques: subTechniques,
+        tactics: techniqueData.tactics,
+        mitre_description: techniqueData.mitre_description,
+        mitre_url: techniqueData.mitre_url,
+        mitre_detection: techniqueData.mitre_detection,
+        platforms: techniqueData.platforms
       });
-      setFunctions(response.functions);
+
+      // TODO: 加载相关函数列表
+      // const functionResponse = await functionsApi.getFunctions({ technique_id: techniqueId });
+      // setFunctions(functionResponse.functions);
+      setFunctions([]);
+
     } catch (error) {
       message.error('加载技术详情失败');
       console.error('Failed to load technique detail:', error);
@@ -170,11 +245,14 @@ const TechniqueDetailPage: React.FC = () => {
             <Title level={3} style={{ margin: 0 }}>
               {technique.technique_name}
             </Title>
+            {technique.is_sub_technique && (
+              <Tag color="orange">子技术</Tag>
+            )}
           </Space>
         }
         style={{ marginBottom: 24 }}
       >
-        <Descriptions column={2}>
+        <Descriptions column={2} bordered>
           <Descriptions.Item label="技术编号">
             <Tag color="blue">{technique.technique_id}</Tag>
           </Descriptions.Item>
@@ -189,6 +267,31 @@ const TechniqueDetailPage: React.FC = () => {
           <Descriptions.Item label="关联函数数量">
             <Badge count={technique.function_count} style={{ backgroundColor: '#52c41a' }} />
           </Descriptions.Item>
+
+          {/* 额外字段 */}
+          {technique.platforms && (
+            <Descriptions.Item label="支持平台" span={2}>
+              <Space>
+                {technique.platforms.split(',').map(platform => (
+                  <Tag key={platform.trim()} color="geekblue">
+                    {platform.trim()}
+                  </Tag>
+                ))}
+              </Space>
+            </Descriptions.Item>
+          )}
+
+          {technique.tactics && technique.tactics.length > 0 && (
+            <Descriptions.Item label="关联战术" span={2}>
+              <Space wrap>
+                {technique.tactics.map(tactic => (
+                  <Tag key={tactic} color="purple">
+                    {tactic}
+                  </Tag>
+                ))}
+              </Space>
+            </Descriptions.Item>
+          )}
         </Descriptions>
 
         {technique.description && (
@@ -196,7 +299,39 @@ const TechniqueDetailPage: React.FC = () => {
             <Title level={5}>
               <InfoCircleOutlined /> 技术描述
             </Title>
-            <Paragraph>{technique.description}</Paragraph>
+            {renderTextWithLinks(technique.description)}
+          </div>
+        )}
+
+        {/* MITRE 官方描述 */}
+        {technique.mitre_description && technique.mitre_description !== technique.description && (
+          <div style={{ marginTop: 16 }}>
+            <Title level={5}>
+              <InfoCircleOutlined /> MITRE 官方描述
+            </Title>
+            {renderTextWithLinks(technique.mitre_description)}
+          </div>
+        )}
+
+        {/* 检测方法 */}
+        {technique.mitre_detection && (
+          <div style={{ marginTop: 16 }}>
+            <Title level={5}>
+              <BulbOutlined /> 检测方法
+            </Title>
+            {renderTextWithLinks(technique.mitre_detection)}
+          </div>
+        )}
+
+        {/* MITRE URL */}
+        {technique.mitre_url && (
+          <div style={{ marginTop: 16 }}>
+            <Space>
+              <Text strong>MITRE ATT&CK 官方链接：</Text>
+              <a href={technique.mitre_url} target="_blank" rel="noopener noreferrer">
+                {technique.mitre_url}
+              </a>
+            </Space>
           </div>
         )}
 
