@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 import uvicorn
 
-from src.api.routes import functions, analysis, search, admin
+from src.api.routes import functions, analysis, search, admin, attack
 from src.database.connection import init_db
 from src.utils.logger import setup_logger
 
@@ -53,6 +53,7 @@ def create_app() -> FastAPI:
     app.include_router(analysis.router, prefix="/api/v1/analysis", tags=["analysis"])
     app.include_router(search.router, prefix="/api/v1/search", tags=["search"])
     app.include_router(admin.router, prefix="/api/v1", tags=["admin"])
+    app.include_router(attack.router, prefix="/api/v1/attack", tags=["ATT&CK"])
 
     # 根路径
     @app.get("/")

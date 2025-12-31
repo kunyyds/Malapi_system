@@ -24,6 +24,7 @@ class AttackTactic(Base):
     tactic_name_en = Column(String(255), nullable=False)
     tactic_name_cn = Column(String(255))
     description = Column(Text)
+    stix_id = Column(String(100), unique=True, nullable=True, index=True, comment="STIX UUID")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
@@ -56,8 +57,14 @@ class AttackTechnique(Base):
     mitre_data_sources = Column(Text, nullable=True)
     mitre_updated_at = Column(DateTime(timezone=True), nullable=True)
 
+    # STIX 扩展字段
+    stix_id = Column(String(100), unique=True, nullable=True, index=True, comment="STIX UUID")
+    platforms = Column(String(500), nullable=True, comment="支持平台，逗号分隔")
+    revoked = Column(Boolean, default=False, comment="是否已撤销")
+    deprecated = Column(Boolean, default=False, comment="是否已弃用")
+
     # 元数据
-    data_source = Column(String(50), default='matrix_enterprise')
+    data_source = Column(String(50), default='stix_enterprise')
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 

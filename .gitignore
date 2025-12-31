@@ -301,3 +301,6 @@ poetry.lock
 # Local development
 local/
 .local/
+
+# history extension
+.history

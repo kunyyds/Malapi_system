@@ -1,0 +1,366 @@
+"""
+从 STIX 格式导入 ATT&CK 数据
+
+使用方法:
+    cd backend
+    conda activate malapi-backend
+    python scripts/maintenance/import_attack_from_stix.py [--clear]
+
+参数:
+    --clear: 清空现有数据后重新导入
+
+数据源:
+    attack-stix-data/enterprise-attack/enterprise-attack.json
+
+参考文档: attack-stix-data/USAGE.md
+"""
+import sys
+import argparse
+from pathlib import Path
+from datetime import datetime
+import sqlite3
+
+# 添加项目路径
+SCRIPT_DIR = Path(__file__).parent.absolute()  # backend/scripts/maintenance
+BACKEND_DIR = SCRIPT_DIR.parent.parent  # backend
+PROJECT_ROOT = BACKEND_DIR.parent  # 项目根目录
+sys.path.insert(0, str(BACKEND_DIR))
+
+from src.services.stix_data_service import STIXDataService
+from src.utils.logger import setup_logger
+
+logger = setup_logger(__name__)
+
+# 数据库路径
+DB_PATH = BACKEND_DIR / "malapi.db"
+
+
+def clear_existing_data(conn, cursor):
+    """清空现有 ATT&CK 数据"""
+    logger.warning("=" * 50)
+    logger.warning("⚠️  清空现有 ATT&CK 数据")
+    logger.warning("=" * 50)
+
+    # 先删除映射关系
+    cursor.execute("DELETE FROM attck_mappings")
+    mappings_count = cursor.rowcount
+    logger.info(f"  → 删除映射关系: {mappings_count} 条")
+
+    # 删除技术
+    cursor.execute("DELETE FROM attack_techniques")
+    techniques_count = cursor.rowcount
+    logger.info(f"  → 删除技术: {techniques_count} 条")
+
+    # 删除战术
+    cursor.execute("DELETE FROM attack_tactics")
+    tactics_count = cursor.rowcount
+    logger.info(f"  → 删除战术: {tactics_count} 条")
+
+    conn.commit()
+    logger.info("✓ 清空完成")
+
+
+def import_tactics(stix_service, conn, cursor):
+    """导入战术数据"""
+    logger.info("\n" + "=" * 50)
+    logger.info("🔹 步骤 1: 导入战术")
+    logger.info("=" * 50)
+
+    tactics = stix_service.get_all_tactics()
+    imported_count = 0
+    updated_count = 0
+
+    for tactic in tactics:
+        tactic_id = tactic['x_mitre_shortname']
+
+        # 检查是否已存在
+        cursor.execute(
+            "SELECT id FROM attack_tactics WHERE tactic_id = ?",
+            (tactic_id,)
+        )
+        exists = cursor.fetchone()
+
+        if exists:
+            # 更新
+            cursor.execute("""
+                UPDATE attack_tactics
+                SET tactic_name_en = ?, description = ?, stix_id = ?, updated_at = CURRENT_TIMESTAMP
+                WHERE tactic_id = ?
+            """, (tactic['name'], tactic.get('description', ''), tactic.get('id', ''), tactic_id))
+            updated_count += 1
+        else:
+            # 插入
+            cursor.execute("""
+                INSERT INTO attack_tactics (tactic_id, tactic_name_en, description, stix_id)
+                VALUES (?, ?, ?, ?)
+            """, (tactic_id, tactic['name'], tactic.get('description', ''), tactic.get('id', '')))
+            imported_count += 1
+
+    conn.commit()
+    logger.info(f"✓ 新导入战术: {imported_count} 条")
+    logger.info(f"✓ 更新战术: {updated_count} 条")
+
+    return imported_count, updated_count
+
+
+def import_techniques(stix_service, conn, cursor):
+    """导入技术和子技术数据"""
+    logger.info("\n" + "=" * 50)
+    logger.info("🔹 步骤 2: 导入技术和子技术")
+    logger.info("=" * 50)
+
+    techniques = stix_service.get_all_techniques(include_subtechniques=True)
+    technique_count = 0
+    subtechnique_count = 0
+    updated_count = 0
+    skipped_count = 0
+
+    for tech in techniques:
+        # 获取 ATT&CK ID
+        attack_id = None
+        for ref in tech.get('external_references', []):
+            if ref.get('source_name') == 'mitre-attack':
+                attack_id = ref.get('external_id')
+                break
+
+        if not attack_id:
+            continue
+
+        # 获取战术 (kill_chain_phases)
+        tactic_shortname = None
+        for phase in tech.get('kill_chain_phases', []):
+            if phase.get('kill_chain_name') == 'mitre-attack':
+                tactic_shortname = phase.get('phase_name')
+                break
+
+        if not tactic_shortname:
+            continue
+
+        # 处理修改时间
+        modified_str = tech.get('modified', '')
+        if modified_str and hasattr(modified_str, '__class__') and 'STIX' in str(modified_str.__class__):
+            # STIX datetime 对象，转换为字符串
+            modified_str = str(modified_str)
+
+        # 处理平台
+        platforms = tech.get('x_mitre_platforms', [])
+        platforms_str = ','.join(platforms) if platforms else None
+
+        # 确定是否为子技术
+        is_subtechnique = tech.get('x_mitre_is_subtechnique', False)
+
+        # 提取父技术ID
+        parent_technique_id = None
+        if is_subtechnique and '.' in attack_id:
+            parent_technique_id = attack_id.rsplit('.', 1)[0]
+
+        # 检查是否已存在
+        cursor.execute(
+            "SELECT id FROM attack_techniques WHERE technique_id = ?",
+            (attack_id,)
+        )
+        exists = cursor.fetchone()
+
+        if exists:
+            # 更新
+            cursor.execute("""
+                UPDATE attack_techniques
+                SET technique_name = ?, tactic_id = ?, is_sub_technique = ?,
+                    parent_technique_id = ?, description = ?, stix_id = ?,
+                    mitre_description = ?, mitre_url = ?, mitre_detection = ?,
+                    platforms = ?, revoked = ?, deprecated = ?,
+                    mitre_updated_at = ?, data_source = 'stix_enterprise',
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE technique_id = ?
+            """, (
+                tech.get('name', ''),
+                tactic_shortname,
+                1 if is_subtechnique else 0,
+                parent_technique_id,
+                tech.get('description', ''),
+                tech.get('id', ''),
+                tech.get('description', ''),
+                f"https://attack.mitre.org/techniques/{attack_id.replace('.', '/')}/",
+                tech.get('x_mitre_detection', ''),
+                platforms_str,
+                1 if tech.get('revoked', False) else 0,
+                1 if tech.get('x_mitre_deprecated', False) else 0,
+                modified_str,
+                attack_id
+            ))
+            updated_count += 1
+        else:
+            # 插入
+            cursor.execute("""
+                INSERT INTO attack_techniques (
+                    technique_id, technique_name, tactic_id, is_sub_technique, parent_technique_id,
+                    description, stix_id, mitre_description, mitre_url, mitre_detection,
+                    platforms, revoked, deprecated, mitre_updated_at, data_source
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'stix_enterprise')
+            """, (
+                attack_id,
+                tech.get('name', ''),
+                tactic_shortname,
+                1 if is_subtechnique else 0,
+                parent_technique_id,
+                tech.get('description', ''),
+                tech.get('id', ''),
+                tech.get('description', ''),
+                f"https://attack.mitre.org/techniques/{attack_id.replace('.', '/')}/",
+                tech.get('x_mitre_detection', ''),
+                platforms_str,
+                1 if tech.get('revoked', False) else 0,
+                1 if tech.get('x_mitre_deprecated', False) else 0,
+                modified_str
+            ))
+
+            if is_subtechnique:
+                subtechnique_count += 1
+            else:
+                technique_count += 1
+
+    conn.commit()
+    logger.info(f"✓ 新导入父技术: {technique_count} 条")
+    logger.info(f"✓ 新导入子技术: {subtechnique_count} 条")
+    logger.info(f"✓ 更新技术: {updated_count} 条")
+
+    return technique_count, subtechnique_count, updated_count
+
+
+def verify_import(cursor):
+    """验证导入结果"""
+    logger.info("\n" + "=" * 50)
+    logger.info("🔹 步骤 3: 验证导入结果")
+    logger.info("=" * 50)
+
+    # 统计
+    cursor.execute("SELECT COUNT(*) FROM attack_tactics")
+    tactics_count = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM attack_techniques")
+    techniques_count = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM attack_techniques WHERE is_sub_technique = 1")
+    subtechniques_count = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM attack_techniques WHERE is_sub_technique = 0")
+    parent_techniques_count = cursor.fetchone()[0]
+
+    logger.info(f"\n📊 数据库统计:")
+    logger.info(f"  战术 (Tactics): {tactics_count} 条")
+    logger.info(f"  父技术 (Techniques): {parent_techniques_count} 条")
+    logger.info(f"  子技术 (Sub-techniques): {subtechniques_count} 条")
+    logger.info(f"  总技术 (Total): {techniques_count} 条")
+
+    # 显示数据示例
+    logger.info(f"\n📋 数据示例:")
+
+    # 战术示例
+    cursor.execute("SELECT tactic_id, tactic_name_en FROM attack_tactics ORDER BY tactic_id LIMIT 3")
+    logger.info(f"\n战术示例:")
+    for row in cursor.fetchall():
+        logger.info(f"  - {row[0]}: {row[1]}")
+
+    # 技术示例
+    cursor.execute("""
+        SELECT technique_id, technique_name, is_sub_technique
+        FROM attack_techniques
+        ORDER BY is_sub_technique, technique_id
+        LIMIT 5
+    """)
+    logger.info(f"\n技术示例:")
+    for row in cursor.fetchall():
+        sub_mark = "  └─" if row[2] else "●"
+        logger.info(f"  {sub_mark} {row[0]}: {row[1]}")
+
+
+def main():
+    """主函数"""
+    parser = argparse.ArgumentParser(
+        description="从 STIX 格式导入 ATT&CK 数据",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+示例:
+  # 导入数据（保留现有数据）
+  python scripts/maintenance/import_attack_from_stix.py
+
+  # 清空现有数据后重新导入
+  python scripts/maintenance/import_attack_from_stix.py --clear
+        """
+    )
+    parser.add_argument(
+        '--clear',
+        action='store_true',
+        help='清空现有数据后重新导入'
+    )
+    args = parser.parse_args()
+
+    print("=" * 60)
+    print("  MalAPI - STIX ATT&CK 数据导入工具")
+    print("=" * 60)
+
+    # 检查数据库
+    if not DB_PATH.exists():
+        logger.error(f"❌ 数据库文件不存在: {DB_PATH}")
+        return False
+
+    logger.info(f"📄 数据库: {DB_PATH}")
+
+    # 检查 STIX 文件
+    stix_path = PROJECT_ROOT / "attack-stix-data" / "enterprise-attack" / "enterprise-attack.json"
+    if not stix_path.exists():
+        logger.error(f"❌ STIX 文件不存在: {stix_path}")
+        logger.error(f"   请确保 Git 子模块已初始化:")
+        logger.error(f"   git submodule update --init --recursive")
+        return False
+
+    logger.info(f"📄 STIX 文件: {stix_path}")
+
+    try:
+        # 初始化服务
+        stix_service = STIXDataService(stix_path)
+        stats = stix_service.get_statistics()
+        logger.info(f"✓ STIX 数据源加载成功")
+        logger.info(f"  - 战术: {stats['tactics']} 个")
+        logger.info(f"  - 父技术: {stats['techniques']} 个")
+        logger.info(f"  - 子技术: {stats['subtechniques']} 个")
+
+        # 连接数据库
+        conn = sqlite3.connect(str(DB_PATH))
+        cursor = conn.cursor()
+
+        try:
+            # 清空现有数据（如果指定）
+            if args.clear:
+                clear_existing_data(conn, cursor)
+
+            # 导入战术
+            import_tactics(stix_service, conn, cursor)
+
+            # 导入技术
+            import_techniques(stix_service, conn, cursor)
+
+            # 验证
+            verify_import(cursor)
+
+            print("\n" + "=" * 50)
+            print("✅ 数据导入成功完成!")
+            print("=" * 50)
+            return True
+
+        except Exception as e:
+            logger.error(f"\n❌ 导入失败: {e}", exc_info=True)
+            conn.rollback()
+            return False
+        finally:
+            conn.close()
+
+    except Exception as e:
+        logger.error(f"❌ 初始化失败: {e}", exc_info=True)
+        return False
+
+
+if __name__ == "__main__":
+    success = main()
+    sys.exit(0 if success else 1)

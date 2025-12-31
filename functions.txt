@@ -19,3 +19,22 @@ P2 - 优化功能： 6. 三级缓存机制 7. 后台自动更新任务 是否开
 ALTER TABLE malapi_functions DROP CONSTRAINT IF EXISTS unique_hash_id;
 ALTER TABLE malapi_functions DROP CONSTRAINT IF EXISTS unique_alias;
 ALTER TABLE malapi_functions ADD CONSTRAINT unique_function UNIQUE (hash_id, alias);
+
+
+如果迁移失败：
+
+# 1. 停止服务
+pkill -f uvicorn
+
+# 2. 恢复数据库
+cp backend/malapi.db.backup backend/malapi.db
+
+# 3. 恢复旧导入脚本
+git checkout HEAD -- backend/scripts/maintenance/import_attack.py
+
+# 4. 重新导入旧数据
+cd backend
+python scripts/maintenance/import_attack.py
+
+# 5. 重启服务
+uvicorn src.main:app --reload
