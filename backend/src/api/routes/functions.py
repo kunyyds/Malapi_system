@@ -244,18 +244,23 @@ async def get_attack_matrix(
     获取ATT&CK矩阵数据
     """
     try:
-        # 查询每个技术及其关联的函数数量
+        # 通过多对多关系查询每个技术及其关联的函数数量
+        # 注意：一个技术可能属于多个战术，会产生多条记录
+        from src.database.models import AttackTechniqueTactic
+
         query = select(
             AttackTechnique.technique_id,
             AttackTechnique.technique_name,
             AttackTactic.tactic_name_en.label('tactic_name'),
             func.count(MalAPIFunction.id).label('function_count')
         ).join(
+            AttackTechniqueTactic, AttackTechniqueTactic.technique_id == AttackTechnique.technique_id
+        ).join(
+            AttackTactic, AttackTechniqueTactic.tactic_id == AttackTactic.tactic_id
+        ).outerjoin(
             AttCKMapping, AttCKMapping.technique_id == AttackTechnique.technique_id
-        ).join(
+        ).outerjoin(
             MalAPIFunction, AttCKMapping.function_id == MalAPIFunction.id
-        ).join(
-            AttackTactic, AttackTechnique.tactic_id == AttackTactic.tactic_id
         ).group_by(
             AttackTechnique.technique_id,
             AttackTechnique.technique_name,
@@ -294,17 +299,22 @@ async def get_techniques_list(
     获取所有ATT&CK技术列表
     """
     try:
+        # 通过多对多关系查询
+        from src.database.models import AttackTechniqueTactic
+
         query = select(
             AttackTechnique.technique_id,
             AttackTechnique.technique_name,
             AttackTactic.tactic_name_en.label('tactic_name'),
             func.count(MalAPIFunction.id).label('function_count')
         ).join(
+            AttackTechniqueTactic, AttackTechniqueTactic.technique_id == AttackTechnique.technique_id
+        ).join(
+            AttackTactic, AttackTechniqueTactic.tactic_id == AttackTactic.tactic_id
+        ).outerjoin(
             AttCKMapping, AttCKMapping.technique_id == AttackTechnique.technique_id
-        ).join(
+        ).outerjoin(
             MalAPIFunction, AttCKMapping.function_id == MalAPIFunction.id
-        ).join(
-            AttackTactic, AttackTechnique.tactic_id == AttackTactic.tactic_id
         ).group_by(
             AttackTechnique.technique_id,
             AttackTechnique.technique_name,
@@ -345,31 +355,42 @@ async def get_technique_detail(
         # 判断是否为子技术
         is_sub_technique = '.' in technique_id
 
-        # 首先查询技术基本信息
+        # 通过多对多关系查询技术基本信息
+        from src.database.models import AttackTechniqueTactic
+
+        # 先获取技术基本信息和所有关联的战术
         technique_query = select(
             AttackTechnique.technique_id,
             AttackTechnique.technique_name,
-            AttackTactic.tactic_name_en.label('tactic_name'),
+            AttackTactic.tactic_id,
+            AttackTactic.tactic_name_en,
             func.count(MalAPIFunction.id).label('function_count')
         ).join(
+            AttackTechniqueTactic, AttackTechniqueTactic.technique_id == AttackTechnique.technique_id
+        ).join(
+            AttackTactic, AttackTechniqueTactic.tactic_id == AttackTactic.tactic_id
+        ).outerjoin(
             AttCKMapping, AttCKMapping.technique_id == AttackTechnique.technique_id
-        ).join(
+        ).outerjoin(
             MalAPIFunction, AttCKMapping.function_id == MalAPIFunction.id
-        ).join(
-            AttackTactic, AttackTechnique.tactic_id == AttackTactic.tactic_id
         ).where(
             AttackTechnique.technique_id == technique_id
         ).group_by(
             AttackTechnique.technique_id,
             AttackTechnique.technique_name,
+            AttackTactic.tactic_id,
             AttackTactic.tactic_name_en
         )
 
         technique_result = await session.execute(technique_query)
-        technique_data = technique_result.first()
+        technique_rows = technique_result.all()
 
-        if not technique_data:
+        if not technique_rows:
             raise HTTPException(status_code=404, detail=f"技术编号 {technique_id} 不存在")
+
+        # 获取第一个结果的基本信息
+        first_row = technique_rows[0]
+        tactic_names = [row.tactic_name_en for row in technique_rows]
 
         # 查询该技术下的所有函数详情
         functions_query = select(MalAPIFunction).options(
@@ -430,13 +451,14 @@ async def get_technique_detail(
         desc_result = await session.execute(description_query)
         description = desc_result.scalar()
 
-        # 初始化响应数据
+        # 初始化响应数据（使用第一个战术名称，支持多战术）
         response_data = {
-            "technique_id": technique_data.technique_id,
-            "technique_name": technique_data.technique_name,
-            "tactic_name": technique_data.tactic_name,
+            "technique_id": first_row.technique_id,
+            "technique_name": first_row.technique_name,
+            "tactic_name": tactic_names[0] if tactic_names else None,  # 主战术
+            "tactic_names": tactic_names,  # 所有战术列表
             "description": description,
-            "function_count": technique_data.function_count,
+            "function_count": first_row.function_count,
             "functions": function_responses,
             "is_sub_technique": is_sub_technique,
             "parent_technique": None,

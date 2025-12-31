@@ -537,7 +537,9 @@ async def get_all_functions_simple(
 
         functions_data = []
         for func in functions:
-            # 使用JOIN查询获取完整的技术信息
+            # 使用多对多关系JOIN查询获取完整的技术信息
+            from src.database.models import AttackTechniqueTactic
+
             tech_query = select(
                 AttackTechnique.technique_id,
                 AttackTechnique.technique_name,
@@ -545,7 +547,9 @@ async def get_all_functions_simple(
             ).join(
                 AttCKMapping, AttCKMapping.technique_id == AttackTechnique.technique_id
             ).join(
-                AttackTactic, AttackTechnique.tactic_id == AttackTactic.tactic_id
+                AttackTechniqueTactic, AttackTechniqueTactic.technique_id == AttackTechnique.technique_id
+            ).join(
+                AttackTactic, AttackTechniqueTactic.tactic_id == AttackTactic.tactic_id
             ).where(
                 AttCKMapping.function_id == func.id
             )
@@ -577,7 +581,9 @@ async def get_all_techniques_simple(
 ):
     """获取所有技术及其关联的函数"""
     try:
-        # 查询所有已映射的技术
+        # 通过多对多关系查询所有已映射的技术
+        from src.database.models import AttackTechniqueTactic
+
         query = select(
             AttackTechnique.technique_id,
             AttackTechnique.technique_name,
@@ -585,7 +591,9 @@ async def get_all_techniques_simple(
         ).join(
             AttCKMapping, AttCKMapping.technique_id == AttackTechnique.technique_id
         ).join(
-            AttackTactic, AttackTechnique.tactic_id == AttackTactic.tactic_id
+            AttackTechniqueTactic, AttackTechniqueTactic.technique_id == AttackTechnique.technique_id
+        ).join(
+            AttackTactic, AttackTechniqueTactic.tactic_id == AttackTactic.tactic_id
         ).distinct().order_by(AttackTechnique.technique_id)
 
         result = await session.execute(query)

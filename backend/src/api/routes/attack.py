@@ -38,7 +38,7 @@ class TechniqueModel(BaseModel):
     id: int
     technique_id: str
     technique_name: str
-    tactic_id: str
+    tactics: List[str] = []
     is_sub_technique: bool
     parent_technique_id: Optional[str]
     description: Optional[str]
@@ -58,7 +58,7 @@ class TechniqueModel(BaseModel):
 class TechniqueDetailModel(TechniqueModel):
     """技术详情模型（包含子技术）"""
     subtechniques: List[TechniqueModel] = []
-    tactic: Optional[TacticModel] = None
+    tactics_details: List[TacticModel] = []
 
 
 class MatrixCellModel(BaseModel):
@@ -132,11 +132,13 @@ async def get_techniques(
 
     支持按战术、平台筛选，可选择是否包含子技术。
     """
-    query = select(AttackTechnique)
+    from sqlalchemy.orm import selectinload
 
-    # 按战术筛选
+    query = select(AttackTechnique).options(selectinload(AttackTechnique.tactics))
+
+    # 按战术筛选（通过多对多关系）
     if tactic_id:
-        query = query.where(AttackTechnique.tactic_id == tactic_id)
+        query = query.join(AttackTechnique.tactics).where(AttackTactic.tactic_id == tactic_id)
 
     # 按平台筛选
     if platform:
@@ -159,8 +161,30 @@ async def get_techniques(
     result = await session.execute(query)
     techniques = result.scalars().all()
 
-    logger.info(f"获取技术列表: {len(techniques)} 条 (筛选: tactic={tactic_id}, platform={platform})")
-    return techniques
+    # 构建响应数据，添加战术列表
+    response_data = []
+    for tech in techniques:
+        tech_dict = {
+            "id": tech.id,
+            "technique_id": tech.technique_id,
+            "technique_name": tech.technique_name,
+            "tactics": [t.tactic_id for t in tech.tactics],
+            "is_sub_technique": tech.is_sub_technique,
+            "parent_technique_id": tech.parent_technique_id,
+            "description": tech.description,
+            "stix_id": tech.stix_id,
+            "mitre_description": tech.mitre_description,
+            "mitre_url": tech.mitre_url,
+            "mitre_detection": tech.mitre_detection,
+            "platforms": tech.platforms,
+            "revoked": tech.revoked,
+            "deprecated": tech.deprecated,
+            "data_source": tech.data_source
+        }
+        response_data.append(TechniqueModel(**tech_dict))
+
+    logger.info(f"获取技术列表: {len(response_data)} 条 (筛选: tactic={tactic_id}, platform={platform})")
+    return response_data
 
 
 @router.get("/techniques/{technique_id}", response_model=TechniqueDetailModel)
@@ -175,9 +199,13 @@ async def get_technique_details(
     返回技术的完整信息，包括 STIX 元数据、检测方法等。
     可选择是否包含子技术列表。
     """
-    # 查询技术
+    from sqlalchemy.orm import selectinload
+
+    # 查询技术，预加载战术关系
     result = await session.execute(
-        select(AttackTechnique).where(AttackTechnique.technique_id == technique_id)
+        select(AttackTechnique)
+        .options(selectinload(AttackTechnique.tactics))
+        .where(AttackTechnique.technique_id == technique_id)
     )
     technique = result.scalar_one_or_none()
 
@@ -189,7 +217,7 @@ async def get_technique_details(
         "id": technique.id,
         "technique_id": technique.technique_id,
         "technique_name": technique.technique_name,
-        "tactic_id": technique.tactic_id,
+        "tactics": [t.tactic_id for t in technique.tactics],
         "is_sub_technique": technique.is_sub_technique,
         "parent_technique_id": technique.parent_technique_id,
         "description": technique.description,
@@ -202,31 +230,42 @@ async def get_technique_details(
         "deprecated": technique.deprecated,
         "data_source": technique.data_source,
         "subtechniques": [],
-        "tactic": None
+        "tactics_details": [TacticModel.model_validate(t) for t in technique.tactics]
     }
-
-    # 获取战术信息
-    tactic_result = await session.execute(
-        select(AttackTactic).where(AttackTactic.tactic_id == technique.tactic_id)
-    )
-    tactic = tactic_result.scalar_one_or_none()
-    if tactic:
-        response_data["tactic"] = TacticModel.model_validate(tactic)
 
     # 获取子技术
     if include_subtechniques and not technique.is_sub_technique:
         sub_result = await session.execute(
-            select(AttackTechnique).where(
+            select(AttackTechnique)
+            .options(selectinload(AttackTechnique.tactics))
+            .where(
                 AttackTechnique.parent_technique_id == technique_id,
                 AttackTechnique.revoked == False
             ).order_by(AttackTechnique.technique_id)
         )
         subtechniques = sub_result.scalars().all()
-        response_data["subtechniques"] = [
-            TechniqueModel.model_validate(sub) for sub in subtechniques
-        ]
+        response_data["subtechniques"] = []
+        for sub in subtechniques:
+            sub_dict = {
+                "id": sub.id,
+                "technique_id": sub.technique_id,
+                "technique_name": sub.technique_name,
+                "tactics": [t.tactic_id for t in sub.tactics],
+                "is_sub_technique": sub.is_sub_technique,
+                "parent_technique_id": sub.parent_technique_id,
+                "description": sub.description,
+                "stix_id": sub.stix_id,
+                "mitre_description": sub.mitre_description,
+                "mitre_url": sub.mitre_url,
+                "mitre_detection": sub.mitre_detection,
+                "platforms": sub.platforms,
+                "revoked": sub.revoked,
+                "deprecated": sub.deprecated,
+                "data_source": sub.data_source
+            }
+            response_data["subtechniques"].append(TechniqueModel(**sub_dict))
 
-    logger.info(f"获取技术详情: {technique_id} (包含 {len(response_data['subtechniques'])} 个子技术)")
+    logger.info(f"获取技术详情: {technique_id} (包含 {len(response_data['subtechniques'])} 个子技术, {len(response_data['tactics'])} 个战术)")
     return response_data
 
 
@@ -249,10 +288,10 @@ async def get_attack_matrix(
     matrix_data = []
 
     for tactic in tactics:
-        # 获取该战术下的所有父技术
+        # 通过多对多关系获取该战术下的所有父技术
         tech_result = await session.execute(
-            select(AttackTechnique).where(
-                AttackTechnique.tactic_id == tactic.tactic_id,
+            select(AttackTechnique).join(AttackTechnique.tactics).where(
+                AttackTactic.tactic_id == tactic.tactic_id,
                 AttackTechnique.is_sub_technique == False,
                 AttackTechnique.revoked == False
             ).order_by(AttackTechnique.technique_id)

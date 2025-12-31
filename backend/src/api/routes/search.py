@@ -80,6 +80,8 @@ async def search_functions(
 
         if search_type in ["all", "technique"]:
             # 搜索ATT&CK技术
+            from src.database.models import AttackTechniqueTactic
+
             technique_search = or_(
                 AttCKMapping.technique_id.ilike(f"%{q}%"),
                 AttackTechnique.technique_name.ilike(f"%{q}%"),
@@ -89,7 +91,9 @@ async def search_functions(
                 query = query.join(AttCKMapping).join(
                     AttackTechnique, AttCKMapping.technique_id == AttackTechnique.technique_id
                 ).join(
-                    AttackTactic, AttackTechnique.tactic_id == AttackTactic.tactic_id
+                    AttackTechniqueTactic, AttackTechniqueTactic.technique_id == AttackTechnique.technique_id
+                ).join(
+                    AttackTactic, AttackTechniqueTactic.tactic_id == AttackTactic.tactic_id
                 )
                 search_conditions.append(technique_search)
 

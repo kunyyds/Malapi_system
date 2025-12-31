@@ -131,13 +131,14 @@ def import_techniques(stix_service, conn, cursor):
         if not attack_id:
             continue
 
-        # 获取所有战术 (kill_chain_phases) - 支持多战术
-        tactic_shortnames = []
+        # 获取战术 (kill_chain_phases)
+        tactic_shortname = None
         for phase in tech.get('kill_chain_phases', []):
             if phase.get('kill_chain_name') == 'mitre-attack':
-                tactic_shortnames.append(phase.get('phase_name'))
+                tactic_shortname = phase.get('phase_name')
+                break
 
-        if not tactic_shortnames:
+        if not tactic_shortname:
             continue
 
         # 处理修改时间
@@ -166,10 +167,10 @@ def import_techniques(stix_service, conn, cursor):
         exists = cursor.fetchone()
 
         if exists:
-            # 更新（删除 tactic_id 列）
+            # 更新
             cursor.execute("""
                 UPDATE attack_techniques
-                SET technique_name = ?, is_sub_technique = ?,
+                SET technique_name = ?, tactic_id = ?, is_sub_technique = ?,
                     parent_technique_id = ?, description = ?, stix_id = ?,
                     mitre_description = ?, mitre_url = ?, mitre_detection = ?,
                     platforms = ?, revoked = ?, deprecated = ?,
@@ -178,6 +179,7 @@ def import_techniques(stix_service, conn, cursor):
                 WHERE technique_id = ?
             """, (
                 tech.get('name', ''),
+                tactic_shortname,
                 1 if is_subtechnique else 0,
                 parent_technique_id,
                 tech.get('description', ''),
@@ -192,26 +194,19 @@ def import_techniques(stix_service, conn, cursor):
                 attack_id
             ))
             updated_count += 1
-
-            # 更新战术关联表（删除旧关联，插入新关联）
-            cursor.execute("DELETE FROM attack_technique_tactics WHERE technique_id = ?", (attack_id,))
-            for tactic_name in tactic_shortnames:
-                cursor.execute("""
-                    INSERT INTO attack_technique_tactics (technique_id, tactic_id)
-                    VALUES (?, ?)
-                """, (attack_id, tactic_name))
         else:
-            # 插入（删除 tactic_id 列）
+            # 插入
             cursor.execute("""
                 INSERT INTO attack_techniques (
-                    technique_id, technique_name, is_sub_technique, parent_technique_id,
+                    technique_id, technique_name, tactic_id, is_sub_technique, parent_technique_id,
                     description, stix_id, mitre_description, mitre_url, mitre_detection,
                     platforms, revoked, deprecated, mitre_updated_at, data_source
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'stix_enterprise')
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'stix_enterprise')
             """, (
                 attack_id,
                 tech.get('name', ''),
+                tactic_shortname,
                 1 if is_subtechnique else 0,
                 parent_technique_id,
                 tech.get('description', ''),
@@ -225,13 +220,6 @@ def import_techniques(stix_service, conn, cursor):
                 modified_str
             ))
 
-            # 插入所有战术关联
-            for tactic_name in tactic_shortnames:
-                cursor.execute("""
-                    INSERT INTO attack_technique_tactics (technique_id, tactic_id)
-                    VALUES (?, ?)
-                """, (attack_id, tactic_name))
-
             if is_subtechnique:
                 subtechnique_count += 1
             else:
@@ -241,17 +229,6 @@ def import_techniques(stix_service, conn, cursor):
     logger.info(f"✓ 新导入父技术: {technique_count} 条")
     logger.info(f"✓ 新导入子技术: {subtechnique_count} 条")
     logger.info(f"✓ 更新技术: {updated_count} 条")
-
-    # 统计多战术技术
-    cursor.execute("""
-        SELECT COUNT(DISTINCT technique_id)
-        FROM attack_technique_tactics
-        GROUP BY technique_id
-        HAVING COUNT(*) > 1
-    """)
-    multi_tactic_count = len(cursor.fetchall())
-    logger.info(f"✓ 多战术技术数: {multi_tactic_count} 条")
-    logger.info(f"✓ 总战术关联数: {cursor.execute('SELECT COUNT(*) FROM attack_technique_tactics').fetchone()[0]} 条")
 
     return technique_count, subtechnique_count, updated_count
 

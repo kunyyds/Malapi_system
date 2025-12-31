@@ -15,6 +15,22 @@ import os
 Base = declarative_base()
 
 
+class AttackTechniqueTactic(Base):
+    """技术-战术多对多关联表"""
+    __tablename__ = "attack_technique_tactics"
+
+    technique_id = Column(String(20), ForeignKey("attack_techniques.technique_id", ondelete="CASCADE"), primary_key=True)
+    tactic_id = Column(String(20), ForeignKey("attack_tactics.tactic_id", ondelete="CASCADE"), primary_key=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    # 关系
+    technique = relationship("AttackTechnique", back_populates="tactic_associations")
+    tactic = relationship("AttackTactic", back_populates="technique_associations")
+
+    def __repr__(self):
+        return f"<AttackTechniqueTactic(technique_id='{self.technique_id}', tactic_id='{self.tactic_id}')>"
+
+
 class AttackTactic(Base):
     """ATT&CK战术模型"""
     __tablename__ = "attack_tactics"
@@ -28,8 +44,9 @@ class AttackTactic(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
-    # 关系
-    techniques = relationship("AttackTechnique", back_populates="tactic")
+    # 多对多关系
+    technique_associations = relationship("AttackTechniqueTactic", back_populates="tactic", cascade="all, delete-orphan")
+    techniques = relationship("AttackTechnique", secondary="attack_technique_tactics", back_populates="tactics")
 
     def __repr__(self):
         return f"<AttackTactic(tactic_id='{self.tactic_id}', name_en='{self.tactic_name_en}')>"
@@ -42,7 +59,7 @@ class AttackTechnique(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     technique_id = Column(String(20), unique=True, nullable=False, index=True)
     technique_name = Column(String(255), nullable=False)
-    tactic_id = Column(String(20), ForeignKey("attack_tactics.tactic_id", ondelete="CASCADE"), nullable=False, index=True)
+    # tactic_id 列已删除 - 使用多对多关系
     is_sub_technique = Column(Boolean, default=False, index=True)
     parent_technique_id = Column(String(20), index=True)
 
@@ -68,8 +85,11 @@ class AttackTechnique(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
-    # 关系
-    tactic = relationship("AttackTactic", back_populates="techniques")
+    # 多对多关系
+    tactic_associations = relationship("AttackTechniqueTactic", back_populates="technique", cascade="all, delete-orphan")
+    tactics = relationship("AttackTactic", secondary="attack_technique_tactics", back_populates="techniques")
+
+    # 父子技术关系
     parent_technique = relationship(
         "AttackTechnique",
         remote_side=[technique_id],

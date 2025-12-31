@@ -134,6 +134,7 @@ async def init_attack_tables():
                         tactic_name_en VARCHAR(255) NOT NULL,
                         tactic_name_cn VARCHAR(255),
                         description TEXT,
+                        stix_id VARCHAR(100) UNIQUE,
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     )
@@ -147,6 +148,10 @@ async def init_attack_tables():
                     CREATE INDEX IF NOT EXISTS ix_attack_tactics_name_en
                     ON attack_tactics(tactic_name_en)
                 """))
+                await conn.execute(text("""
+                    CREATE INDEX IF NOT EXISTS ix_attack_tactics_stix_id
+                    ON attack_tactics(stix_id)
+                """))
 
             if 'attack_techniques' not in existing_tables:
                 logger.info("创建 attack_techniques 表...")
@@ -155,20 +160,22 @@ async def init_attack_tables():
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         technique_id VARCHAR(20) UNIQUE NOT NULL,
                         technique_name VARCHAR(255) NOT NULL,
-                        tactic_id VARCHAR(20) NOT NULL,
                         is_sub_technique BOOLEAN DEFAULT 0,
                         parent_technique_id VARCHAR(20),
                         description TEXT,
+                        stix_id VARCHAR(100) UNIQUE,
                         mitre_description TEXT,
                         mitre_url VARCHAR(500),
                         mitre_detection TEXT,
                         mitre_mitigation TEXT,
                         mitre_data_sources TEXT,
                         mitre_updated_at TIMESTAMP,
-                        data_source VARCHAR(50) DEFAULT 'matrix_enterprise',
+                        platforms VARCHAR(500),
+                        revoked BOOLEAN DEFAULT 0,
+                        deprecated BOOLEAN DEFAULT 0,
+                        data_source VARCHAR(50) DEFAULT 'stix_enterprise',
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        FOREIGN KEY(tactic_id) REFERENCES attack_tactics(tactic_id) ON DELETE CASCADE
+                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     )
                 """))
                 # 创建索引
@@ -177,20 +184,43 @@ async def init_attack_tables():
                     ON attack_techniques(technique_id)
                 """))
                 await conn.execute(text("""
-                    CREATE INDEX IF NOT EXISTS ix_attack_techniques_tactic_id
-                    ON attack_techniques(tactic_id)
-                """))
-                await conn.execute(text("""
-                    CREATE INDEX IF NOT EXISTS ix_attack_techniques_is_sub
+                    CREATE INDEX IF NOT EXISTS ix_attack_techniques_is_sub_technique
                     ON attack_techniques(is_sub_technique)
                 """))
                 await conn.execute(text("""
-                    CREATE INDEX IF NOT EXISTS ix_attack_techniques_parent_id
+                    CREATE INDEX IF NOT EXISTS ix_attack_techniques_parent_technique_id
                     ON attack_techniques(parent_technique_id)
                 """))
                 await conn.execute(text("""
-                    CREATE INDEX IF NOT EXISTS ix_attack_techniques_name
-                    ON attack_techniques(technique_name)
+                    CREATE INDEX IF NOT EXISTS ix_attack_techniques_stix_id
+                    ON attack_techniques(stix_id)
+                """))
+
+            # 检查并创建关联表
+            result = await conn.execute(text("""
+                SELECT name FROM sqlite_master
+                WHERE type='table' AND name='attack_technique_tactics'
+            """))
+            if not result.fetchone():
+                logger.info("创建 attack_technique_tactics 关联表...")
+                await conn.execute(text("""
+                    CREATE TABLE attack_technique_tactics (
+                        technique_id VARCHAR(20) NOT NULL,
+                        tactic_id VARCHAR(20) NOT NULL,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        PRIMARY KEY (technique_id, tactic_id),
+                        FOREIGN KEY (technique_id) REFERENCES attack_techniques(technique_id) ON DELETE CASCADE,
+                        FOREIGN KEY (tactic_id) REFERENCES attack_tactics(tactic_id) ON DELETE CASCADE
+                    )
+                """))
+                # 创建索引
+                await conn.execute(text("""
+                    CREATE INDEX IF NOT EXISTS ix_attack_technique_tactics_technique_id
+                    ON attack_technique_tactics(technique_id)
+                """))
+                await conn.execute(text("""
+                    CREATE INDEX IF NOT EXISTS ix_attack_technique_tactics_tactic_id
+                    ON attack_technique_tactics(tactic_id)
                 """))
 
             # 检查表中是否有数据
