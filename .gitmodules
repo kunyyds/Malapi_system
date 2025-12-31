@@ -1,0 +1,3 @@
+[submodule "attack-stix-data"]
+	path = attack-stix-data
+	url = https://github.com/mitre-attack/attack-stix-data.git
