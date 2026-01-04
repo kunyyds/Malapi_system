@@ -21,7 +21,6 @@ MalAPI系统是一个专业的恶意软件API管理平台，基于ATT&CK框架�
 - **数据库**: PostgreSQL + Redis
 - **ORM**: SQLAlchemy
 - **LLM集成**: OpenAI API / 本地模型
-- **部署**: Docker
 
 ### 前端技术栈
 - **框架**: React 18 + TypeScript
@@ -33,60 +32,74 @@ MalAPI系统是一个专业的恶意软件API管理平台，基于ATT&CK框架�
 
 ### 环境要求
 
-- Docker & Docker Compose
 - Node.js 18+ (开发环境)
 - Python 3.11+ (开发环境)
+- Conda (Miniconda或Anaconda)
+- SQLite (开发环境默认)
 
-### 使用Docker启动（推荐）
+### 三步快速启动
 
-1. 克隆项目
+1. **安装Conda环境**
 ```bash
-git clone <repository-url>
-cd MalAPI_system
+cd backend
+bash scripts/setup_env.sh
 ```
 
-2. 配置环境变量
+2. **启动后端服务**
 ```bash
-cp backend/.env.example backend/.env
-# 编辑 .env 文件，配置数据库和LLM API密钥
+bash scripts/start_dev.sh
 ```
 
-3. 启动服务
+3. **启动前端服务**
 ```bash
-# 启动所有服务
-docker-compose up -d
-
-# 查看服务状态
-docker-compose ps
-
-# 查看日志
-docker-compose logs -f
+# 新开一个终端
+cd frontend
+npm install  # 首次运行
+npm start
 ```
 
-4. 访问应用
-- 前端界面: http://localhost:3000
-- 后端API: http://localhost:8000
-- API文档: http://localhost:8000/docs
+访问 http://localhost:3000 开始使用！
 
-### 开发环境启动
+### 开发环境启动（推荐）
 
-#### 后端开发
+#### 方法一：使用Make命令（推荐）
+
+```bash
+# 安装依赖并启动开发环境
+make dev
+
+# 或分步执行
+make install        # 安装所有依赖
+make dev           # 启动开发环境
+
+# 停止开发环境
+make dev-stop      # 停止前后端服务
+make all-stop      # 停止所有服务（包括Docker）
+```
+
+#### 方法二：手动启动
+
+**后端开发：**
 
 ```bash
 cd backend
 
-# 创建虚拟环境
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# 或
-venv\Scripts\activate  # Windows
+# 1. 设置Conda环境（首次运行）
+bash scripts/setup_env.sh
 
-# 安装依赖
-pip install -r requirements.txt
+# 2. 激活Conda环境
+conda activate malapi-backend
 
-# 启动开发服务器
-uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
+# 3. 启动开发服务器
+bash scripts/start_dev.sh
 ```
+
+启动脚本会自动：
+- 检查并激活conda环境
+- 初始化SQLite数据库
+- 检查端口占用（默认8000）
+- 启动FastAPI服务（支持热重载）
+- 提供API文档访问地址
 
 #### 前端开发
 
@@ -100,6 +113,17 @@ npm install
 npm start
 ```
 
+前端服务将运行在 http://localhost:3000
+
+#### 服务验证
+
+启动成功后，可以访问：
+- 前端界面: http://localhost:3000
+- 后端API: http://localhost:8000
+- API文档: http://localhost:8000/docs
+- 交互式API文档（Swagger）: http://localhost:8000/docs
+- ReDoc文档: http://localhost:8000/redoc
+
 ## 项目结构
 
 ```
@@ -112,8 +136,14 @@ MalAPI_system/
 │   │   ├── llm/           # LLM集成
 │   │   ├── services/       # 业务逻辑
 │   │   └── utils/         # 工具函数
+│   ├── scripts/           # 开发脚本
+│   │   ├── setup_env.sh   # 环境设置
+│   │   ├── start_dev.sh   # 启动开发服务器
+│   │   ├── init_database.sh # 数据库初始化
+│   │   └── maintenance/   # 维护脚本
 │   ├── tests/
-│   └── Dockerfile
+│   ├── environment.yml    # Conda环境配置
+│   └── requirements.txt   # Python依赖
 ├── frontend/               # 前端应用
 │   ├── src/
 │   │   ├── components/    # React组件
@@ -121,17 +151,57 @@ MalAPI_system/
 │   │   ├── services/      # API服务
 │   │   └── utils/         # 工具函数
 │   ├── public/
-│   └── Dockerfile
-├── database/              # 数据库脚本
-│   └── schema.sql
+│   └── package.json       # Node依赖
 ├── files/                 # 数据文件
-├── docker-compose.yml
+├── Makefile               # 构建命令
 └── README.md
+```
+
+## 常用Make命令
+
+项目提供了便捷的Make命令来管理开发流程：
+
+```bash
+# 环境管理
+make help              # 查看所有可用命令
+make setup-dev         # 设置开发环境配置文件
+
+# 依赖管理
+make install           # 安装所有依赖（前端+后端）
+
+# 开发服务
+make dev               # 启动开发环境（前端+后端）
+make dev-stop          # 停止开发环境
+make all-stop          # 停止所有服务
+
+# 代码质量
+make test              # 运行所有测试
+make lint              # 代码检查
+make clean             # 清理临时文件
+
+# 构建部署
+make build             # 构建生产版本
+
+# 数据库管理
+make db-init           # 初始化数据库
+make db-migrate        # 执行数据库迁移
+make db-seed           # 导入种子数据
+
+# 数据导入
+make import-data       # 导入MalFocus数据
+
+# API文档
+make docs              # 显示API文档地址
+
+# 监控
+make status            # 查看服务状态
 ```
 
 ## API文档
 
-启动后端服务后，访问 http://localhost:8000/docs 查看交互式API文档。
+启动后端服务后，可以访问以下文档：
+- Swagger UI: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
 
 ### 主要接口
 
@@ -155,21 +225,50 @@ python -m src.parsers.importer --path /path/to/malfocus/results
 
 ### 后端配置
 
-主要配置项在 `backend/.env` 文件中：
+首次运行 `scripts/setup_env.sh` 时会自动创建 `backend/.env` 文件。主要配置项：
 
 ```env
-# 数据库配置
-DATABASE_URL=postgresql://user:pass@localhost:5432/malapi
+# 应用配置
+DEBUG=true
+APP_NAME=MalAPI System
+VERSION=1.0.0
 
-# Redis配置
+# 数据库配置 - 开发环境使用SQLite
+DATABASE_URL=sqlite+aiosqlite:///./malapi.db
+
+# Redis配置（可选）
 REDIS_URL=redis://localhost:6379
 
 # LLM配置
-OPENAI_API_KEY=your_openai_api_key
+OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_BASE_URL=https://api.openai.com/v1
 OPENAI_MODEL=gpt-4
+OPENAI_TEMPERATURE=0.7
+OPENAI_MAX_TOKENS=2000
 
-# 文件路径
-FILES_BASE_PATH=/path/to/files
+# 文件路径配置
+FILES_BASE_PATH=/home/mine/workspace/MalAPI_system/files
+
+# 缓存配置
+CACHE_TTL_SECONDS=3600
+LLM_CACHE_TTL_HOURS=24
+
+# 日志配置
+LOG_LEVEL=INFO
+LOG_FILE=malapi.log
+
+# API配置
+API_PREFIX=/api/v1
+MAX_REQUEST_SIZE=10485760
+
+# 分页配置
+DEFAULT_PAGE_SIZE=20
+MAX_PAGE_SIZE=100
+
+# 成本控制配置
+DAILY_LLM_BUDGET=100.0
+COST_PER_TOKEN_GPT4=0.00003
+COST_PER_TOKEN_GPT35=0.000002
 ```
 
 ### 前端配置
@@ -181,7 +280,74 @@ REACT_APP_API_URL=http://localhost:8000
 REACT_APP_ENV=development
 ```
 
+### Conda环境管理
+
+后端使用Conda进行环境管理：
+
+```bash
+# 创建环境（首次运行）
+cd backend
+bash scripts/setup_env.sh
+
+# 激活环境
+conda activate malapi-backend
+
+# 退出环境
+conda deactivate
+
+# 删除并重建环境
+conda env remove -n malapi-backend -y
+bash scripts/setup_env.sh
+```
+
+环境配置文件：`backend/environment.yml`
+
 ## 开发指南
+
+### 故障排除
+
+**问题1：端口被占用**
+```bash
+# 查找占用8000端口的进程
+lsof -ti:8000
+
+# 终止进程
+lsof -ti:8000 | xargs kill -9
+
+# 或使用make命令
+make dev-stop
+```
+
+**问题2：Conda环境激活失败**
+```bash
+# 初始化conda
+conda init bash
+
+# 重新加载shell配置
+source ~/.bashrc
+
+# 重新创建环境
+cd backend
+conda env remove -n malapi-backend -y
+bash scripts/setup_env.sh
+```
+
+**问题3：数据库初始化失败**
+```bash
+# 删除现有数据库
+cd backend
+rm -f malapi.db
+
+# 重新初始化
+bash scripts/init_database.sh
+```
+
+**问题4：前端无法连接后端**
+- 检查后端是否正常运行：访问 http://localhost:8000/docs
+- 检查前端配置文件 `frontend/.env` 中的 `REACT_APP_API_URL`
+- 确保后端CORS配置允许前端地址
+
+### 开发指南
 
 ### 添加新的API接口
 
@@ -195,34 +361,39 @@ REACT_APP_ENV=development
 2. 在 `frontend/src/components/` 下创建可复用组件
 3. 更新 `frontend/src/App.tsx` 添加路由
 
-### 数据库迁移
+### 数据库管理
+
+项目使用SQLite作为开发数据库，启动脚本会自动初始化数据库。
+
+**手动数据库操作：**
 
 ```bash
-# 生成迁移文件
-alembic revision --autogenerate -m "描述"
+# 查看数据库状态
+sqlite3 backend/malapi.db ".tables"
 
-# 执行迁移
+# 数据库初始化
+cd backend
+bash scripts/init_database.sh
+
+# 数据库迁移（如果使用Alembic）
+alembic revision --autogenerate -m "描述"
 alembic upgrade head
 ```
+
+**数据库文件位置：**
+- 开发环境：`backend/malapi.db`
+- 数据目录：`backend/data/`
 
 ## 部署
 
 ### 生产环境部署
 
-1. 使用生产配置启动服务
-```bash
-docker-compose -f docker-compose.prod.yml up -d
-```
-
-2. 配置反向代理（Nginx）
-3. 启用SSL证书
-4. 配置监控和日志
-
-### 扩展部署
-
-- 支持Kubernetes部署
-- 支持云平台部署（AWS、Azure、GCP）
-- 支持微服务架构
+1. 配置生产环境变量
+2. 构建前端项目
+3. 配置反向代理（Nginx）
+4. 使用进程管理工具（如systemd、supervisor）管理后端服务
+5. 启用SSL证书
+6. 配置监控和日志
 
 ## 性能优化
 
@@ -266,7 +437,6 @@ docker-compose -f docker-compose.prod.yml up -d
 - ✅ ATT&CK矩阵可视化
 - ✅ 基础搜索功能
 - ✅ 代码分析功能
-- ✅ Docker部署支持
 
 ---
 
