@@ -6,10 +6,10 @@ import {
   SearchOutlined,
   DollarOutlined
 } from '@ant-design/icons';
-import AttackMatrixSimple from '@/components/AttackMatrix/AttackMatrixSimple';
-import { functionsApi } from '@/services/api';
-import { attackApiService } from '@/services/attackApi';
-import { AttackMatrixData, MalAPIFunction } from '@/types';
+import AttackMatrixSimple from '../components/AttackMatrix/AttackMatrixSimple';
+import { functionsApi } from '../services/api';
+import { attackApiService } from '../services/attackApi';
+import { AttackMatrixData, MalAPIFunction } from '../types';
 import './MatrixPage.css';
 
 const MatrixPage: React.FC = () => {

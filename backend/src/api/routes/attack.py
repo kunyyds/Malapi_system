@@ -67,6 +67,7 @@ class MatrixCellModel(BaseModel):
     technique_id: str
     technique_name: str
     has_subtechniques: bool
+    function_count: int = 0  # 该技术关联的函数数量
 
 
 class TacticMatrixModel(BaseModel):
@@ -350,7 +351,7 @@ async def get_attack_matrix(
     """
     获取 ATT&CK 矩阵数据
 
-    返回按战术组织的技术矩阵结构。
+    返回按战术组织的技术矩阵结构,包含每个技术的函数数量。
     """
     # 获取所有战术
     tactics_result = await session.execute(
@@ -385,10 +386,19 @@ async def get_attack_matrix(
                 )
                 has_subs = sub_result.scalar_one_or_none() is not None
 
+            # 获取该技术的函数数量
+            count_result = await session.execute(
+                select(func.count())
+                .select_from(AttCKMapping)
+                .where(AttCKMapping.technique_id == tech.technique_id)
+            )
+            function_count = count_result.scalar() or 0
+
             matrix_cells.append(MatrixCellModel(
                 technique_id=tech.technique_id,
                 technique_name=tech.technique_name,
-                has_subtechniques=has_subs
+                has_subtechniques=has_subs,
+                function_count=function_count
             ))
 
         matrix_data.append(TacticMatrixModel(

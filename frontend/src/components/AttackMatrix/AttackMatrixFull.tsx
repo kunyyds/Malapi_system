@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Card, Collapse, Badge, Space, Typography, Row, Col, Spin, Empty, Tooltip } from 'antd';
 import { ExpandOutlined, CompressOutlined, BugOutlined, DownOutlined } from '@ant-design/icons';
-import { AttackMatrixEnterprise, MatrixColumn, ExpandedTechnique, TechniqueData } from '../../types';
+import { AttackMatrixEnterprise, MatrixColumn, ExpandedTechnique, TechniqueData, TacticMatrixModel } from '../../types';
 import matrixData from '../../matrix-enterprise.json';
 import './AttackMatrixFull.css';
 
@@ -10,6 +10,7 @@ const { Title, Text } = Typography;
 
 interface AttackMatrixFullProps {
   onTechniqueClick?: (techniqueId: string, techniqueName: string) => void;
+  matrixDataFromApi?: TacticMatrixModel[];  // 从后端API获取的矩阵数据
 }
 
 // 战术颜色配置
@@ -30,10 +31,23 @@ const TACTIC_COLORS: { [key: string]: string } = {
   'TA0040': '#4caf50'  // 影响
 };
 
-const AttackMatrixFull: React.FC<AttackMatrixFullProps> = ({ onTechniqueClick }) => {
+const AttackMatrixFull: React.FC<AttackMatrixFullProps> = ({ onTechniqueClick, matrixDataFromApi }) => {
   const [expandedTechniques, setExpandedTechniques] = useState<Set<string>>(new Set());
   const [matrixColumns, setMatrixColumns] = useState<MatrixColumn[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // 创建函数计数映射,用于快速查找
+  const functionCountMap = useMemo(() => {
+    if (!matrixDataFromApi) return {};
+
+    const map: Record<string, number> = {};
+    matrixDataFromApi.forEach(tactic => {
+      tactic.techniques.forEach(tech => {
+        map[tech.technique_id] = tech.function_count;
+      });
+    });
+    return map;
+  }, [matrixDataFromApi]);
 
   // 转换数据格式
   useEffect(() => {
@@ -54,6 +68,9 @@ const AttackMatrixFull: React.FC<AttackMatrixFullProps> = ({ onTechniqueClick })
             const techName = techData as string;
             const subTechs = technique.sub || [];
 
+            // 优先使用API数据中的函数数量,如果没有则使用0
+            const functionCount = functionCountMap[techId] || 0;
+
             techniques.push({
               technique_id: techId,
               technique_name: techName,
@@ -61,7 +78,7 @@ const AttackMatrixFull: React.FC<AttackMatrixFullProps> = ({ onTechniqueClick })
                 sub_id: Object.keys(sub)[0],
                 sub_name: Object.values(sub)[0] as string
               })),
-              function_count: Math.floor(Math.random() * 20) // 模拟函数数量
+              function_count: functionCount  // 使用真实的函数数量
             });
           });
         });
@@ -80,7 +97,7 @@ const AttackMatrixFull: React.FC<AttackMatrixFullProps> = ({ onTechniqueClick })
     };
 
     convertData();
-  }, []);
+  }, [functionCountMap]);
 
   // 切换技术展开状态
   const toggleTechniqueExpansion = (techniqueId: string) => {

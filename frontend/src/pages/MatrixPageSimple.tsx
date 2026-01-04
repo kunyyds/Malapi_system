@@ -1,71 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Statistic, Spin, Tabs } from 'antd';
-import { BugOutlined, SafetyOutlined, AppstoreOutlined } from '@ant-design/icons';
+import { Card, Row, Col, Statistic, Spin, Alert } from 'antd';
+import { BugOutlined, SafetyOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import AttackMatrixSimple from '../components/AttackMatrix/AttackMatrixSimple';
 import AttackMatrixFull from '../components/AttackMatrix/AttackMatrixFull';
 import { AttackMatrixData } from '../types';
-
-// 模拟数据
-const mockData: AttackMatrixData[] = [
-  {
-    technique_id: 'T1190',
-    technique_name: 'Exploit Public-Facing Application',
-    tactic_name: 'Initial Access',
-    function_count: 5
-  },
-  {
-    technique_id: 'T1078',
-    technique_name: 'Valid Accounts',
-    tactic_name: 'Initial Access',
-    function_count: 3
-  },
-  {
-    technique_id: 'T1059',
-    technique_name: 'Command and Scripting Interpreter',
-    tactic_name: 'Execution',
-    function_count: 8
-  },
-  {
-    technique_id: 'T1055',
-    technique_name: 'Process Injection',
-    tactic_name: 'Execution',
-    function_count: 12
-  },
-  {
-    technique_id: 'T1027',
-    technique_name: 'Obfuscated Files or Information',
-    tactic_name: 'Defense Evasion',
-    function_count: 15
-  },
-  {
-    technique_id: 'T1140',
-    technique_name: 'Deobfuscate/Decode Files or Information',
-    tactic_name: 'Defense Evasion',
-    function_count: 9
-  },
-  {
-    technique_id: 'T1003',
-    technique_name: 'OS Credential Dumping',
-    tactic_name: 'Credential Access',
-    function_count: 11
-  }
-];
+import { attackApiService } from '../services/attackApi';
 
 const MatrixPageSimple: React.FC = () => {
   const navigate = useNavigate();
   const [matrixData, setMatrixData] = useState<AttackMatrixData[]>([]);
+  const [fullMatrixData, setFullMatrixData] = useState<any[]>([]);  // 完整的矩阵数据,包含函数数量
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<string>('full');
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // 模拟数据加载
+    // 从后端API加载真实数据
     const loadData = async () => {
-      setLoading(true);
-      // 模拟API延迟
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setMatrixData(mockData);
-      setLoading(false);
+      try {
+        setLoading(true);
+        setError(null);
+
+        // 获取完整的矩阵数据(包含函数数量)
+        const fullData = await attackApiService.getAttackMatrix();
+        setFullMatrixData(fullData);
+
+        // 同时获取简化格式用于统计
+        const simpleData = await attackApiService.getMatrixDataForFrontend();
+        setMatrixData(simpleData);
+
+      } catch (err: any) {
+        console.error('加载矩阵数据失败:', err);
+        setError(err.message || '加载ATT&CK矩阵数据失败');
+      } finally {
+        setLoading(false);
+      }
     };
 
     loadData();
@@ -78,15 +46,8 @@ const MatrixPageSimple: React.FC = () => {
   const coverage = totalTechniques > 0 ? Math.round((techniquesWithFunctions / totalTechniques) * 100) : 0;
 
   // 处理技术点击
-  const handleTechniqueClick = (technique: AttackMatrixData) => {
-    console.log('技术点击:', technique);
-    // 跳转到技术详情页
-    navigate(`/technique/${technique.technique_id}`);
-  };
-
-  // 处理新技术矩阵点击
-  const handleNewTechniqueClick = (techniqueId: string, techniqueName: string) => {
-    console.log('新技术点击:', techniqueId, techniqueName);
+  const handleTechniqueClick = (techniqueId: string, techniqueName: string) => {
+    console.log('技术点击:', techniqueId, techniqueName);
     // 跳转到技术详情页
     navigate(`/technique/${techniqueId}`);
   };
@@ -100,9 +61,22 @@ const MatrixPageSimple: React.FC = () => {
     );
   }
 
+  if (error) {
+    return (
+      <div style={{ padding: '50px' }}>
+        <Alert
+          message="加载失败"
+          description={error}
+          type="error"
+          showIcon
+        />
+      </div>
+    );
+  }
+
   return (
     <div style={{ padding: '20px', background: '#f0f2f5', minHeight: '100vh' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+      <div style={{ maxWidth: '100%', margin: '0 auto' }}>
         <div style={{ marginBottom: '20px' }}>
           <h1 style={{ fontSize: '28px', fontWeight: 'bold', color: '#1890ff', margin: 0 }}>
             ATT&CK 技术矩阵
@@ -157,41 +131,9 @@ const MatrixPageSimple: React.FC = () => {
 
         {/* ATT&CK矩阵 */}
         <Card title="ATT&CK 技术矩阵" style={{ marginBottom: '20px' }}>
-          <Tabs
-            activeKey={activeTab}
-            onChange={setActiveTab}
-            items={[
-              {
-                key: 'full',
-                label: (
-                  <span>
-                    <AppstoreOutlined />
-                    完整矩阵
-                  </span>
-                ),
-                children: (
-                  <AttackMatrixFull
-                    onTechniqueClick={handleNewTechniqueClick}
-                  />
-                )
-              },
-              {
-                key: 'heatmap',
-                label: (
-                  <span>
-                    <SafetyOutlined />
-                    热力图
-                  </span>
-                ),
-                children: (
-                  <AttackMatrixSimple
-                    data={matrixData}
-                    loading={loading}
-                    onCellClick={handleTechniqueClick}
-                  />
-                )
-              }
-            ]}
+          <AttackMatrixFull
+            onTechniqueClick={handleTechniqueClick}
+            matrixDataFromApi={fullMatrixData}
           />
         </Card>
 
@@ -204,7 +146,7 @@ const MatrixPageSimple: React.FC = () => {
             <strong>颜色说明：</strong>颜色越深表示该技术对应的函数数量越多
           </p>
           <p>
-            <strong>数据来源：</strong>基于MalFocus解析结果，包含36个恶意软件样本
+            <strong>数据来源：</strong>基于后端ATT&CK API实时数据
           </p>
         </Card>
       </div>

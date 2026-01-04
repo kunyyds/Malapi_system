@@ -138,7 +138,7 @@ export class AttackApiService {
           technique_name: tech.technique_name,
           tactic_name: tactic.tactic_name || tactic.tactic_name_cn || tactic.tactic_id,
           tactic_id: tactic.tactic_id,
-          function_count: 0, // TODO: 后续可以从函数映射表获取实际数量
+          function_count: tech.function_count,  // 使用后端返回的实际函数数量
           has_subtechniques: tech.has_subtechniques
         });
       });

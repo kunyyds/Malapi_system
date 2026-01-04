@@ -102,6 +102,7 @@ export interface MatrixCellModel {
   technique_id: string;
   technique_name: string;
   has_subtechniques: boolean;
+  function_count: number;  // 该技术关联的函数数量
 }
 
 // ATT&CK战术矩阵模型

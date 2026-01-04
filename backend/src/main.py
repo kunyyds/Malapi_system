@@ -46,6 +46,7 @@ def create_app() -> FastAPI:
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
+        expose_headers=["X-Total-Count", "X-Page", "X-Page-Size", "X-Total-Pages"],
     )
 
     # 注册路由
