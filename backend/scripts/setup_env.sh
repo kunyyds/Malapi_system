@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 # MalAPI后端环境设置脚本
 
 set -e  # 遇到错误立即退出
@@ -21,7 +21,7 @@ echo -e "${GREEN}✅ Conda已安装${NC}"
 
 # 接受conda terms of service
 echo "📋 接受Conda服务条款..."
-conda tos accept --override-channels
+conda tos accept
 
 # 检查环境是否已存在
 if conda env list | grep -q "malapi-backend"; then
@@ -33,6 +33,7 @@ if conda env list | grep -q "malapi-backend"; then
         conda env remove -n malapi-backend -y
     else
         echo "✅ 使用现有环境"
+        eval "$(conda shell.bash hook)"
         conda activate malapi-backend
         exit 0
     fi
