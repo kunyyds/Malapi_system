@@ -211,8 +211,8 @@ typings/
 dist
 
 # Gatsby files
-.cache/
-public
+# .cache/
+# public
 
 # Vuepress build output
 .vuepress/dist
