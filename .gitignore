@@ -304,3 +304,6 @@ local/
 
 # history extension
 .history
+
+# custom
+template
